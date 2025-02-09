@@ -70,7 +70,9 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
+      DoubleSupplier omegaSupplier,
+      DoubleSupplier increaseSpeedSupplier,
+      DoubleSupplier decreaseSpeedSupplier) {
     return Commands.run(
         () -> {
           // Get linear velocity
@@ -78,17 +80,32 @@ public class DriveCommands {
               getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
           // Apply rotation deadband
+
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
 
+          double X = linearVelocity.getX();
+          double Y = linearVelocity.getY();
+          double OMEGA = omega;
+
+          if (increaseSpeedSupplier.getAsDouble() > 0.05) {
+            X *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+            Y *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+            OMEGA *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+          } else if (decreaseSpeedSupplier.getAsDouble() > 0.05) {
+            X /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+            Y /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+            OMEGA /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+          }
+
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
               new ChassisSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec());
+                  X * drive.getMaxLinearSpeedMetersPerSec(),
+                  Y * drive.getMaxLinearSpeedMetersPerSec(),
+                  OMEGA * drive.getMaxAngularSpeedRadPerSec());
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
