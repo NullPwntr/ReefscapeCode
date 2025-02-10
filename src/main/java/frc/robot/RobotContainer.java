@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AlgaeCommands;
+import frc.robot.commands.CoralCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
@@ -47,8 +49,9 @@ public class RobotContainer {
   private final Coral coral;
   private final Algae algae;
 
-  // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  // Controllers
+  private final CommandXboxController driverController = new CommandXboxController(RobotConstants.Controllers.DriverPortId);
+  private final CommandXboxController operatorController = new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -132,27 +135,30 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX(),
-            () -> controller.getRightTriggerAxis(),
-            () -> controller.getLeftTriggerAxis()));
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX(),
+            () -> driverController.getRightTriggerAxis(),
+            () -> driverController.getLeftTriggerAxis()));
+
+
+    ////////////////////////////////////////////////////////// V-- DRIVER --V ///////////////////////////////////////////////////////////////////////////
 
     // Lock to 0° when A button is held
-    controller
+    driverController
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    driverController
         .b()
         .onTrue(
             Commands.runOnce(
@@ -161,7 +167,36 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+
+    ////////////////////////////////////////////////////////// V-- OPERATOR --V ///////////////////////////////////////////////////////////////////////////
+
+    // Starts Intaking for coral when B button is pressed (B)
+    operatorController.b()
+        .onTrue(CoralCommands.Intake(coral))
+        .onFalse(CoralCommands.stopMotor(coral));
+
+    // Throws coral when Y button is pressed (Y)
+    operatorController.y()
+        .onTrue(CoralCommands.Outtake(coral))
+        .onFalse(CoralCommands.stopMotor(coral));
+
+
+    // Starts Intaking for algae when A button is pressed (A)
+    operatorController.a()
+        .onTrue(AlgaeCommands.Intake(algae))
+        .onFalse(AlgaeCommands.stopMotor(algae));
+
+    // Throws algae when X button is pressed (X)
+    operatorController.x()
+        .onTrue(AlgaeCommands.Outtake(algae))
+        .onFalse(AlgaeCommands.stopMotor(algae));
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   }
+
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

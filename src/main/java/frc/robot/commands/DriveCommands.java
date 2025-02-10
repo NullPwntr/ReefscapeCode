@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -66,58 +67,113 @@ public class DriveCommands {
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
+  // public static Command joystickDrive(
+  //     Drive drive,
+  //     DoubleSupplier xSupplier,
+  //     DoubleSupplier ySupplier,
+  //     DoubleSupplier omegaSupplier,
+  //     DoubleSupplier increaseSpeedSupplier,
+  //     DoubleSupplier decreaseSpeedSupplier) {
+  //   return Commands.run(
+  //       () -> {
+  //         // Get linear velocity
+  //         Translation2d linearVelocity =
+  //             getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+  //         // Apply rotation deadband
+
+  //         double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+  //         // Square rotation value for more precise control
+  //         omega = Math.copySign(omega * omega, omega);
+
+  //         double X = linearVelocity.getX();
+  //         double Y = linearVelocity.getY();
+  //         double OMEGA = omega;
+
+  //         if (increaseSpeedSupplier.getAsDouble() > 0.05) {
+  //           X *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+  //           Y *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+  //           OMEGA *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+  //         } else if (decreaseSpeedSupplier.getAsDouble() > 0.05) {
+  //           X /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+  //           Y /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+  //           OMEGA /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
+  //         }
+
+  //         // Convert to field relative speeds & send command
+  //         ChassisSpeeds speeds =
+  //             new ChassisSpeeds(
+  //                 X * drive.getMaxLinearSpeedMetersPerSec(),
+  //                 Y * drive.getMaxLinearSpeedMetersPerSec(),
+  //                 OMEGA * drive.getMaxAngularSpeedRadPerSec());
+  //         boolean isFlipped =
+  //             DriverStation.getAlliance().isPresent()
+  //                 && DriverStation.getAlliance().get() == Alliance.Red;
+  //         drive.runVelocity(
+  //             ChassisSpeeds.fromFieldRelativeSpeeds(
+  //                 speeds,
+  //                 isFlipped
+  //                     ? drive.getRotation().plus(new Rotation2d(Math.PI))
+  //                     : drive.getRotation()));
+  //       },
+  //       drive);
+  // }
   public static Command joystickDrive(
-      Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier,
-      DoubleSupplier increaseSpeedSupplier,
-      DoubleSupplier decreaseSpeedSupplier) {
-    return Commands.run(
-        () -> {
-          // Get linear velocity
-          Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+    Drive drive,
+    DoubleSupplier xSupplier,
+    DoubleSupplier ySupplier,
+    DoubleSupplier omegaSupplier,
+    DoubleSupplier rightTriggerSupplier,
+    DoubleSupplier leftTriggerSupplier) {
+  return Commands.run(
+      () -> {
+        // Get linear velocity from the joysticks
+        Translation2d linearVelocity =
+            getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-          // Apply rotation deadband
+        // Apply deadband to rotation and square for finer control
+        double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+        omega = Math.copySign(omega * omega, omega);
 
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+        // Calculate speed multiplier based on trigger inputs:
+        // - Default multiplier is 0.7 (70% of maximum speed)
+        // - Left trigger linearly reduces the multiplier (down to 0.3)
+        // - Right trigger linearly increases the multiplier (up to 1.0)
+        double baseMultiplier = RobotConstants.SwerveSettings.baseSpeedPercentage;
+        double minimumSpeed = RobotConstants.SwerveSettings.minimumSpeedPercentage;
+        double maximumSpeed = RobotConstants.SwerveSettings.maximumSpeedPercentage;
 
-          // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega);
+        double leftReduction = leftTriggerSupplier.getAsDouble() * (baseMultiplier - minimumSpeed);   // 0.7 -> 0.3 when fully pressed (baseMultiplier - minimumSpeed = 0.4)
+        double rightIncrease = rightTriggerSupplier.getAsDouble() * (maximumSpeed - baseMultiplier);   // 0.7 -> 1.0 when fully pressed (maximumSpeed - baseMultiplier = 0.3)
 
-          double X = linearVelocity.getX();
-          double Y = linearVelocity.getY();
-          double OMEGA = omega;
+        double speedMultiplier = baseMultiplier - leftReduction + rightIncrease; // Adding up the incrase/reduction values to the base multiplier thus giving us a proper multiplier for both triggers
+        speedMultiplier = MathUtil.clamp(speedMultiplier, minimumSpeed, maximumSpeed); // Make [SpeedMultiplier = minimumSpeed] when both triggers are held down (0.7 - 0.4 + 0.3 => 0 ---clamp---> 0.3)  
 
-          if (increaseSpeedSupplier.getAsDouble() > 0.05) {
-            X *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
-            Y *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
-            OMEGA *= (1 + MathUtil.clamp((increaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
-          } else if (decreaseSpeedSupplier.getAsDouble() > 0.05) {
-            X /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
-            Y /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
-            OMEGA /= (1 + MathUtil.clamp((decreaseSpeedSupplier.getAsDouble()), 0, 1)) * 2.5;
-          }
+        // Calculate the maximum linear/angular speed based on our multiplier
+        double maxLinearSpeed = drive.getMaxLinearSpeedMetersPerSec() * speedMultiplier;
+        double maxAngularSpeed = drive.getMaxAngularSpeedRadPerSec() * speedMultiplier;
 
-          // Convert to field relative speeds & send command
-          ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  X * drive.getMaxLinearSpeedMetersPerSec(),
-                  Y * drive.getMaxLinearSpeedMetersPerSec(),
-                  OMEGA * drive.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
-        },
-        drive);
-  }
+        // Convert to field-relative speeds & send the command
+        ChassisSpeeds speeds =
+            new ChassisSpeeds(
+                linearVelocity.getX() * maxLinearSpeed,
+                linearVelocity.getY() * maxLinearSpeed,
+                omega * maxAngularSpeed);
+
+        boolean isFlipped =
+            DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red;
+        drive.runVelocity(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                speeds,
+                isFlipped
+                    ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                    : drive.getRotation()));
+      },
+      drive);
+}
+  
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.

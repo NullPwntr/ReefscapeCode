@@ -6,35 +6,37 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.RobotConstants;
+import frc.robot.commands.CoralCommands;
 
 public class Coral extends SubsystemBase {
 
-  TalonFX coralIntake = new TalonFX(30);
+  public TalonFX coralIntake = new TalonFX(RobotConstants.CoralSubsystem.IntakeMotorId);
 
-  XboxController operatorController = new XboxController(1);
+  XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
+  CommandXboxController commandOperatorController = new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
 
-  /** Creates a new Coral. */
   public Coral() {
     SmartDashboard.putNumber("CoralSpeed", 0.15);
 
-    var breakConfig = new MotorOutputConfigs();
-    breakConfig.NeutralMode = NeutralModeValue.Brake;
+    var Config = new MotorOutputConfigs();
+    Config.NeutralMode = RobotConstants.CoralSubsystem.NeutralMode;
 
-    coralIntake.getConfigurator().apply(breakConfig);
+    coralIntake.getConfigurator().apply(Config);
   }
 
   @Override
   public void periodic() {
-    if (operatorController.getBButton()) {
-      coralIntake.set(SmartDashboard.getNumber("CoralSpeed", 0.15));
-    } else if (operatorController.getYButton()) {
-      coralIntake.set(-SmartDashboard.getNumber("CoralSpeed", 0.15));
-    } else {
-      coralIntake.set(0);
-    }
+    // if (operatorController.getBButton()) {
+    //   coralIntake.set(SmartDashboard.getNumber("CoralSpeed", 0.15));
+    // } else if (operatorController.getYButton()) {
+    //   coralIntake.set(-SmartDashboard.getNumber("CoralSpeed", 0.15));
+    // } else {
+    //   coralIntake.set(0);
+    // }
   }
 }
