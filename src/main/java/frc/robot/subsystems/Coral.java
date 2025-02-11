@@ -11,14 +11,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotConstants;
-import frc.robot.commands.CoralCommands;
 
 public class Coral extends SubsystemBase {
 
   public TalonFX coralIntake = new TalonFX(RobotConstants.CoralSubsystem.IntakeMotorId);
 
   XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
-  CommandXboxController commandOperatorController = new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
+  CommandXboxController commandOperatorController =
+      new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
 
   public Coral() {
     SmartDashboard.putNumber("CoralSpeed", 0.15);

@@ -120,60 +120,76 @@ public class DriveCommands {
   //       drive);
   // }
   public static Command joystickDrive(
-    Drive drive,
-    DoubleSupplier xSupplier,
-    DoubleSupplier ySupplier,
-    DoubleSupplier omegaSupplier,
-    DoubleSupplier rightTriggerSupplier,
-    DoubleSupplier leftTriggerSupplier) {
-  return Commands.run(
-      () -> {
-        // Get linear velocity from the joysticks
-        Translation2d linearVelocity =
-            getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier,
+      DoubleSupplier rightTriggerSupplier,
+      DoubleSupplier leftTriggerSupplier) {
+    return Commands.run(
+        () -> {
+          // Get linear velocity from the joysticks
+          Translation2d linearVelocity =
+              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-        // Apply deadband to rotation and square for finer control
-        double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-        omega = Math.copySign(omega * omega, omega);
+          // Apply deadband to rotation and square for finer control
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          omega = Math.copySign(omega * omega, omega);
 
-        // Calculate speed multiplier based on trigger inputs:
-        // - Default multiplier is 0.7 (70% of maximum speed)
-        // - Left trigger linearly reduces the multiplier (down to 0.3)
-        // - Right trigger linearly increases the multiplier (up to 1.0)
-        double baseMultiplier = RobotConstants.SwerveSettings.baseSpeedPercentage;
-        double minimumSpeed = RobotConstants.SwerveSettings.minimumSpeedPercentage;
-        double maximumSpeed = RobotConstants.SwerveSettings.maximumSpeedPercentage;
+          // Calculate speed multiplier based on trigger inputs:
+          // - Default multiplier is 0.7 (70% of maximum speed)
+          // - Left trigger linearly reduces the multiplier (down to 0.3)
+          // - Right trigger linearly increases the multiplier (up to 1.0)
+          double baseMultiplier = RobotConstants.SwerveSettings.baseSpeedPercentage;
+          double minimumSpeed = RobotConstants.SwerveSettings.minimumSpeedPercentage;
+          double maximumSpeed = RobotConstants.SwerveSettings.maximumSpeedPercentage;
 
-        double leftReduction = leftTriggerSupplier.getAsDouble() * (baseMultiplier - minimumSpeed);   // 0.7 -> 0.3 when fully pressed (baseMultiplier - minimumSpeed = 0.4)
-        double rightIncrease = rightTriggerSupplier.getAsDouble() * (maximumSpeed - baseMultiplier);   // 0.7 -> 1.0 when fully pressed (maximumSpeed - baseMultiplier = 0.3)
+          double leftReduction =
+              leftTriggerSupplier.getAsDouble()
+                  * (baseMultiplier
+                      - minimumSpeed); // 0.7 -> 0.3 when fully pressed (baseMultiplier -
+          // minimumSpeed = 0.4)
+          double rightIncrease =
+              rightTriggerSupplier.getAsDouble()
+                  * (maximumSpeed
+                      - baseMultiplier); // 0.7 -> 1.0 when fully pressed (maximumSpeed -
+          // baseMultiplier = 0.3)
 
-        double speedMultiplier = baseMultiplier - leftReduction + rightIncrease; // Adding up the incrase/reduction values to the base multiplier thus giving us a proper multiplier for both triggers
-        speedMultiplier = MathUtil.clamp(speedMultiplier, minimumSpeed, maximumSpeed); // Make [SpeedMultiplier = minimumSpeed] when both triggers are held down (0.7 - 0.4 + 0.3 => 0 ---clamp---> 0.3)  
+          double speedMultiplier =
+              baseMultiplier
+                  - leftReduction
+                  + rightIncrease; // Adding up the incrase/reduction values to the base multiplier
+          // thus giving us a proper multiplier for both triggers
+          speedMultiplier =
+              MathUtil.clamp(
+                  speedMultiplier,
+                  minimumSpeed,
+                  maximumSpeed); // Make [SpeedMultiplier = minimumSpeed] when both triggers are
+          // held down (0.7 - 0.4 + 0.3 => 0 ---clamp---> 0.3)
 
-        // Calculate the maximum linear/angular speed based on our multiplier
-        double maxLinearSpeed = drive.getMaxLinearSpeedMetersPerSec() * speedMultiplier;
-        double maxAngularSpeed = drive.getMaxAngularSpeedRadPerSec() * speedMultiplier;
+          // Calculate the maximum linear/angular speed based on our multiplier
+          double maxLinearSpeed = drive.getMaxLinearSpeedMetersPerSec() * speedMultiplier;
+          double maxAngularSpeed = drive.getMaxAngularSpeedRadPerSec() * speedMultiplier;
 
-        // Convert to field-relative speeds & send the command
-        ChassisSpeeds speeds =
-            new ChassisSpeeds(
-                linearVelocity.getX() * maxLinearSpeed,
-                linearVelocity.getY() * maxLinearSpeed,
-                omega * maxAngularSpeed);
+          // Convert to field-relative speeds & send the command
+          ChassisSpeeds speeds =
+              new ChassisSpeeds(
+                  linearVelocity.getX() * maxLinearSpeed,
+                  linearVelocity.getY() * maxLinearSpeed,
+                  omega * maxAngularSpeed);
 
-        boolean isFlipped =
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red;
-        drive.runVelocity(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                speeds,
-                isFlipped
-                    ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                    : drive.getRotation()));
-      },
-      drive);
-}
-  
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  speeds,
+                  isFlipped
+                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                      : drive.getRotation()));
+        },
+        drive);
+  }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.

@@ -28,6 +28,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Coral;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -48,10 +49,13 @@ public class RobotContainer {
 
   private final Coral coral;
   private final Algae algae;
+  private final Elevator elevator;
 
   // Controllers
-  private final CommandXboxController driverController = new CommandXboxController(RobotConstants.Controllers.DriverPortId);
-  private final CommandXboxController operatorController = new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
+  private final CommandXboxController driverController =
+      new CommandXboxController(RobotConstants.Controllers.DriverPortId);
+  private final CommandXboxController operatorController =
+      new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -71,6 +75,7 @@ public class RobotContainer {
 
         coral = new Coral();
         algae = new Algae();
+        elevator = new Elevator();
         break;
 
       case SIM:
@@ -85,6 +90,7 @@ public class RobotContainer {
 
         coral = new Coral();
         algae = new Algae();
+        elevator = new Elevator();
         break;
 
       default:
@@ -98,6 +104,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         coral = new Coral();
         algae = new Algae();
+        elevator = new Elevator();
         break;
     }
 
@@ -141,8 +148,8 @@ public class RobotContainer {
             () -> driverController.getRightTriggerAxis(),
             () -> driverController.getLeftTriggerAxis()));
 
-
-    ////////////////////////////////////////////////////////// V-- DRIVER --V ///////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////// V-- DRIVER --V
+    // ///////////////////////////////////////////////////////////////////////////
 
     // Lock to 0° when A button is held
     driverController
@@ -168,35 +175,36 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    ////////////////////////////////////////////////////////// V-- OPERATOR --V ///////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////// V-- OPERATOR --V
+    // ///////////////////////////////////////////////////////////////////////////
 
     // Starts Intaking for coral when B button is pressed (B)
-    operatorController.b()
+    operatorController
+        .b()
         .onTrue(CoralCommands.Intake(coral))
         .onFalse(CoralCommands.stopMotor(coral));
 
     // Throws coral when Y button is pressed (Y)
-    operatorController.y()
+    operatorController
+        .y()
         .onTrue(CoralCommands.Outtake(coral))
         .onFalse(CoralCommands.stopMotor(coral));
 
-
     // Starts Intaking for algae when A button is pressed (A)
-    operatorController.a()
+    operatorController
+        .a()
         .onTrue(AlgaeCommands.Intake(algae))
         .onFalse(AlgaeCommands.stopMotor(algae));
 
     // Throws algae when X button is pressed (X)
-    operatorController.x()
+    operatorController
+        .x()
         .onTrue(AlgaeCommands.Outtake(algae))
         .onFalse(AlgaeCommands.stopMotor(algae));
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   }
-
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

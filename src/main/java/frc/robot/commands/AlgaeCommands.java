@@ -9,29 +9,28 @@ public class AlgaeCommands {
 
   private AlgaeCommands() {}
 
-
   public static Command Intake(Algae algae) {
     return Commands.run(
-            () -> {
-              algae.algaeIntake.set(RobotConstants.AlgaeSubsystem.IntakeSpeed);
-            },
-            algae);
+        () -> {
+          algae.algaeIntake.set(RobotConstants.AlgaeSubsystem.IntakeSpeed);
+        },
+        algae);
   }
 
   public static Command Outtake(Algae algae) {
     return Commands.run(
-            () -> {
-              algae.algaeIntake.set(RobotConstants.AlgaeSubsystem.OuttakeSpeed);
-            },
-            algae);
+        () -> {
+          algae.algaeIntake.set(RobotConstants.AlgaeSubsystem.OuttakeSpeed);
+        },
+        algae);
   }
 
   public static Command stopMotor(Algae algae) {
     return Commands.runOnce(
-            () -> {
-              algae.algaeIntake.set(0);
-            },
-            algae);
+        () -> {
+          algae.algaeIntake.set(0);
+        },
+        algae);
   }
 
   // public static Command setAngle(Coral coral, double angle) {
