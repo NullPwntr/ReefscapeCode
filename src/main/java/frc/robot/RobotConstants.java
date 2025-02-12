@@ -21,23 +21,35 @@ public class RobotConstants {
         0.15; // (X * 100)% of the MAXIMUM speed (100%)
   }
 
-
-
   public class CoralSubsystem {
     public static final int IntakeMotorId = 30;
 
     public static final double IntakeSpeed = 0.3; // Default Intake Speed
     public static final double OuttakeSpeed = -0.3; // Default Outtake Speed (Negative value)
 
+    public class AngleSystem {
+      public static final int MotorId = 34;
+
+      public class PIDFF {
+        public static final double kP = 0.08;
+        public static final double kI = 0;
+        public static final double kD = 0.003; // 0.005;
+
+        public static final double kS = 0;
+        public static final double kG = 0; // Manually calculated
+        public static final double kV = 0;
+        public static final double kA = 0;
+      }
+    }
+
     public class Config {
       public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
-      
-      public static final InvertedValue MotorInverted = InvertedValue.CounterClockwise_Positive; // Motor inverstion type (CW+ / CCW+)
+
+      public static final InvertedValue MotorInverted =
+          InvertedValue.CounterClockwise_Positive; // Motor inverstion type (CW+ / CCW+)
       public static final double CurrentLimit = 40.0; // Max current in Amperes
     }
   }
-
-
 
   public class AlgaeSubsystem {
     public static final int IntakeMotorId = 31;
@@ -50,13 +62,12 @@ public class RobotConstants {
 
     public class Config {
       public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
-      
-      public static final InvertedValue MotorInverted = InvertedValue.CounterClockwise_Positive; // Motor inverstion type (CW+ / CCW+)
+
+      public static final InvertedValue MotorInverted =
+          InvertedValue.CounterClockwise_Positive; // Motor inverstion type (CW+ / CCW+)
       public static final double CurrentLimit = 40.0; // Max current in Amperes
     }
   }
-
-
 
   public class ElevatorSubsystem {
     public static final int TopMotorId = 32;
@@ -65,21 +76,22 @@ public class RobotConstants {
     public static final double MotorSpeed = 0.5; // temporary
 
     public class PIDFF {
-      public static final double kP = 0; // 0.1;
+      public static final double kP = 0.05; // 0.1;
       public static final double kI = 0;
       public static final double kD = 0;
 
       public static final double kS = 0;
-      public static final double kG = 0; // 0.5;
+      public static final double kG = 0.738; // Manually calculated
       public static final double kV = 0;
       public static final double kA = 0;
     }
 
     public class Config {
-      public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
+      public static final NeutralModeValue NeutralMode = NeutralModeValue.Coast;
 
-      public static final InvertedValue MotorInverted = InvertedValue.CounterClockwise_Positive; // Motor inversion type (CW+ / CCW+)
-      public static final double CurrentLimit = 40.0; // Max current in Amperes
+      public static final InvertedValue MotorInverted =
+          InvertedValue.Clockwise_Positive; // Motor inversion type (CW+ / CCW+)
+      public static final double CurrentLimit = 60.0; // Max current in Amperes
     }
   }
 }

@@ -11,7 +11,7 @@ public class ElevatorCommands {
   public static Command SetSetpoint(Elevator elevator, double setpoint) {
     return Commands.run(
         () -> {
-          elevator.setSetpoint(setpoint);
+          // elevator.setSetpoint(setpoint);
         },
         elevator);
   }
