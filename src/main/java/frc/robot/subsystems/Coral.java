@@ -24,7 +24,7 @@ public class Coral extends SubsystemBase {
     SmartDashboard.putNumber("CoralSpeed", 0.15);
 
     var Config = new MotorOutputConfigs();
-    Config.NeutralMode = RobotConstants.CoralSubsystem.NeutralMode;
+    Config.NeutralMode = RobotConstants.CoralSubsystem.Config.NeutralMode;
 
     coralIntake.getConfigurator().apply(Config);
   }

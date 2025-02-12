@@ -21,7 +21,7 @@ public class Algae extends SubsystemBase {
     SmartDashboard.putNumber("AlgaeSpeed", 0.3);
 
     var Config = new MotorOutputConfigs();
-    Config.NeutralMode = RobotConstants.AlgaeSubsystem.NeutralMode;
+    Config.NeutralMode = RobotConstants.AlgaeSubsystem.Config.NeutralMode;
 
     algaeIntake.getConfigurator().apply(Config);
   }
