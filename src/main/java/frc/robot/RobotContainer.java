@@ -203,6 +203,16 @@ public class RobotContainer {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // OPERATOR CONTROLS PLAN:-
+    // A - Coral Intake (Toggle)
+    // Y - Algae Intake (Toggle)
+    // POV UP - L4 Scoring (Angle on hold, Score on release if has coral)
+    // POV RIGHT - L3 Scoring (Angle on hold, Score on release if has coral)
+    // POV DOWN - L2 Scoring (Angle on hold, Score on release if has coral)
+    // POV LEFT - L1 (Trough) Scoring
+    // RB + LB - Net Scoring Angle (Elevator + Arms) for Algae
+    // X - Throw Algae (For Processor + Net + Incase Stuck) (Hold)
+    // B - Throw Coral Incase Stuck (Hold)
   }
 
   /**

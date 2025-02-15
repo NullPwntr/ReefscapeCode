@@ -167,6 +167,9 @@ public class DriveCommands {
                   maximumSpeed); // Make [SpeedMultiplier = minimumSpeed] when both triggers are
           // held down (0.7 - 0.4 + 0.3 => 0 ---clamp---> 0.3)
 
+          // Disable speed modifications in autonomous 
+          speedMultiplier = DriverStation.isAutonomousEnabled() ? 1 : speedMultiplier;
+
           // Calculate the maximum linear/angular speed based on our multiplier
           double maxLinearSpeed = drive.getMaxLinearSpeedMetersPerSec() * speedMultiplier;
           double maxAngularSpeed = drive.getMaxAngularSpeedRadPerSec() * speedMultiplier;

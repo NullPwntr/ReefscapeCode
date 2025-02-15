@@ -4,12 +4,13 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotConstants;
@@ -20,6 +21,8 @@ public class Coral extends SubsystemBase {
 
   public TalonFX coralIntake = new TalonFX(RobotConstants.CoralSubsystem.IntakeMotorId);
   public TalonFX coralAngleMotor = new TalonFX(RobotConstants.CoralSubsystem.AngleSystem.MotorId);
+
+  public CANrange sensor = new CANrange(RobotConstants.CoralSubsystem.CANRangeId);
 
   XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
   CommandXboxController commandOperatorController =
@@ -38,46 +41,60 @@ public class Coral extends SubsystemBase {
   double setpoint = 0.0;
 
   public Coral() {
-    SmartDashboard.putNumber("CoralSpeed", 0.15);
-
+    // Motor Config //
     var Config = new MotorOutputConfigs();
     Config.NeutralMode = RobotConstants.CoralSubsystem.Config.NeutralMode;
 
     coralIntake.getConfigurator().apply(Config);
     coralAngleMotor.getConfigurator().apply(Config);
 
+    // Current Limiter //
+    var currentLimits = new CurrentLimitsConfigs();
+
+    currentLimits.StatorCurrentLimit = RobotConstants.CoralSubsystem.Config.CurrentLimit;
+    currentLimits.StatorCurrentLimitEnable = true; // Enable stator current limiting
+
+    coralAngleMotor.getConfigurator().apply(currentLimits);
+    //  //  //  //  //  //
+
     coralAngleMotor.getConfigurator().setPosition(0.0);
 
     pid.setSetpoint(0);
-    // pid.setTolerance(0.1);
+  }
+
+  @AutoLogOutput(key = "Coral/Sensor/Distance")
+  public double getSensorDistance() {
+    return sensor.getDistance().getValueAsDouble();
+  }
+
+  @AutoLogOutput(key = "Coral/HasCoral")
+  public boolean hasCoral() {
+    return (sensor.getDistance().getValueAsDouble()
+            <= RobotConstants.CoralSubsystem.hasCoralThreshold)
+        ? true
+        : false;
   }
 
   @Override
   public void periodic() {
-    // if (operatorController.getBButton()) {
-    //   coralIntake.set(SmartDashboard.getNumber("CoralSpeed", 0.15));
-    // } else if (operatorController.getYButton()) {
-    //   coralIntake.set(-SmartDashboard.getNumber("CoralSpeed", 0.15));
-    // } else {
-    //   coralIntake.set(0);
-    // }
-
     output = pid.calculate(coralAngleMotor.getPosition().getValueAsDouble());
 
     if (operatorController.getAButton()) {
-      setpoint = 24;
+      setpoint = RobotConstants.CoralSubsystem.Setpoints.NormalScoring;
     } else {
-      setpoint = 7;
+      setpoint = RobotConstants.CoralSubsystem.Setpoints.Center;
     }
 
     pid.setSetpoint(setpoint);
 
-    coralAngleMotor.setVoltage(MathUtil.clamp(output, -0.1, 0.4) * 12.0);
+    coralAngleMotor.setVoltage(
+        MathUtil.clamp(
+                output,
+                RobotConstants.CoralSubsystem.AngleSystem.ReturnMaxSpeed,
+                RobotConstants.CoralSubsystem.AngleSystem.LaunchMaxSpeed)
+            * 12.0);
 
     Logger.recordOutput(
         "Coral/CurrentAnglePosition", coralAngleMotor.getPosition().getValueAsDouble());
-
-    // SmartDashboard.putNumber(
-    //     "coralAnglePosition", coralAngleMotor.getPosition().getValueAsDouble());
   }
 }

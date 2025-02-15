@@ -11,7 +11,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -74,10 +73,6 @@ public class Elevator extends SubsystemBase {
     BottomMotor.getConfigurator().setPosition(0.0);
 
     pid.setSetpoint(0);
-
-    SmartDashboard.putNumber(
-        "ElevatorCustom_kP", RobotConstants.ElevatorSubsystem.PIDFF.kP); // temporary
-    SmartDashboard.putNumber("elevsetpoint", 0.0); // temporary
   }
 
   /** Sets the voltage of both of the elevator motors */
@@ -101,27 +96,13 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    pid.setP(
-        SmartDashboard.getNumber(
-            "ElevatorCustom_kP", RobotConstants.ElevatorSubsystem.PIDFF.kP)); // temporary
 
     if (operatorController.getRightBumperButton()) {
-      // TopMotor.set(RobotConstants.ElevatorSubsystem.MotorSpeed);
-      // BottomMotor.set(RobotConstants.ElevatorSubsystem.MotorSpeed);
-      elevatorSetpoint = 77;
+      elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MaxHeight;
     } else if (operatorController.getLeftBumperButton()) {
-      // TopMotor.set(-RobotConstants.ElevatorSubsystem.MotorSpeed);
-      // // BottomMotor.set(-RobotConstants.ElevatorSubsystem.MotorSpeed);
-      elevatorSetpoint =
-          22.5; // SmartDashboard.getNumber("ElevatorCustom_Setpoint", 0); // temporary
-      // elevatorSetpoint =
-      //     SmartDashboard.getNumber(
-      //         "elevsetpoint",
-      //         0.0); // SmartDashboard.getNumber("ElevatorCustom_Setpoint", 0); // temporary
+      elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.L2;
     } else {
-      // TopMotor.set(0);
-      // BottomMotor.set(0);
-      elevatorSetpoint = -1.0;
+      elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight;
     }
 
     pid.setSetpoint(elevatorSetpoint);
@@ -129,9 +110,12 @@ public class Elevator extends SubsystemBase {
     ffOutput = feedforward.calculate(TopMotor.getVelocity().getValueAsDouble());
 
     setElevatorVoltage(
-        MathUtil.clamp(pidOutput, -0.2, 0.5) * 12.0 // 0.5
-            + feedforward.calculate(TopMotor.getVelocity().getValueAsDouble()));
-    // setElevatorVoltage(0);
+        MathUtil.clamp(
+                    pidOutput,
+                    RobotConstants.ElevatorSubsystem.DescendMaxSpeed,
+                    RobotConstants.ElevatorSubsystem.AscendMaxSpeed)
+                * 12.0
+            + ffOutput);
 
     // Advantage Scope Logging
     Logger.recordOutput("Elevator/TopMotor/Position", TopMotor.getPosition().getValueAsDouble());
@@ -141,10 +125,9 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(
         "Elevator/BottomMotor/Voltage", TopMotor.getMotorVoltage().getValueAsDouble());
 
-    Logger.recordOutput(
-        "Elevator/Motion/PID Output (Volts)",
-        pid.calculate(TopMotor.getPosition().getValueAsDouble()) * 12.0);
+    Logger.recordOutput("Elevator/Motion/PID Output (Volts)", pidOutput * 12.0);
 
     Logger.recordOutput("Elevator/Motion/PID Output", pidOutput);
+    Logger.recordOutput("Elevator/Motion/FF Output", ffOutput);
   }
 }
