@@ -19,8 +19,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   // Motors
-  TalonFX TopMotor = new TalonFX(RobotConstants.ElevatorSubsystem.TopMotorId);
-  TalonFX BottomMotor = new TalonFX(RobotConstants.ElevatorSubsystem.BottomMotorId);
+  TalonFX TopMotor = new TalonFX(RobotConstants.ElevatorSubsystem.TopMotorId, "CAN");
+  TalonFX BottomMotor = new TalonFX(RobotConstants.ElevatorSubsystem.BottomMotorId, "CAN");
 
   // Motion Controls
   private final PIDController pid =
@@ -62,7 +62,7 @@ public class Elevator extends SubsystemBase {
     var currentLimits = new CurrentLimitsConfigs();
 
     currentLimits.StatorCurrentLimit = RobotConstants.ElevatorSubsystem.Config.CurrentLimit;
-    currentLimits.StatorCurrentLimitEnable = false; // Enable stator current limiting
+    currentLimits.StatorCurrentLimitEnable = true; // Enable stator current limiting
 
     TopMotor.getConfigurator().apply(currentLimits);
     BottomMotor.getConfigurator().apply(currentLimits);
@@ -77,7 +77,7 @@ public class Elevator extends SubsystemBase {
 
     SmartDashboard.putNumber(
         "ElevatorCustom_kP", RobotConstants.ElevatorSubsystem.PIDFF.kP); // temporary
-    SmartDashboard.putNumber("ElevatorCustom_Setpoint", 0.0); // temporary
+    SmartDashboard.putNumber("elevsetpoint", 0.0); // temporary
   }
 
   /** Sets the voltage of both of the elevator motors */
@@ -108,15 +108,20 @@ public class Elevator extends SubsystemBase {
     if (operatorController.getRightBumperButton()) {
       // TopMotor.set(RobotConstants.ElevatorSubsystem.MotorSpeed);
       // BottomMotor.set(RobotConstants.ElevatorSubsystem.MotorSpeed);
-      elevatorSetpoint = 30.0;
+      elevatorSetpoint = 77;
     } else if (operatorController.getLeftBumperButton()) {
       // TopMotor.set(-RobotConstants.ElevatorSubsystem.MotorSpeed);
-      // BottomMotor.set(-RobotConstants.ElevatorSubsystem.MotorSpeed);
-      elevatorSetpoint = 10; // SmartDashboard.getNumber("ElevatorCustom_Setpoint", 0); // temporary
+      // // BottomMotor.set(-RobotConstants.ElevatorSubsystem.MotorSpeed);
+      elevatorSetpoint =
+          22.5; // SmartDashboard.getNumber("ElevatorCustom_Setpoint", 0); // temporary
+      // elevatorSetpoint =
+      //     SmartDashboard.getNumber(
+      //         "elevsetpoint",
+      //         0.0); // SmartDashboard.getNumber("ElevatorCustom_Setpoint", 0); // temporary
     } else {
       // TopMotor.set(0);
       // BottomMotor.set(0);
-      elevatorSetpoint = 4.0;
+      elevatorSetpoint = -1.0;
     }
 
     pid.setSetpoint(elevatorSetpoint);
@@ -124,7 +129,7 @@ public class Elevator extends SubsystemBase {
     ffOutput = feedforward.calculate(TopMotor.getVelocity().getValueAsDouble());
 
     setElevatorVoltage(
-        MathUtil.clamp(pidOutput, -0.1, 0.3) * 12.0 // 0.5
+        MathUtil.clamp(pidOutput, -0.2, 0.5) * 12.0 // 0.5
             + feedforward.calculate(TopMotor.getVelocity().getValueAsDouble()));
     // setElevatorVoltage(0);
 

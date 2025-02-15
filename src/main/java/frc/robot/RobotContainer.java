@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AlgaeCommands;
 import frc.robot.commands.CoralCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -191,16 +190,16 @@ public class RobotContainer {
         .onFalse(CoralCommands.stopMotor(coral));
 
     // Starts Intaking for algae when A button is pressed (A)
-    operatorController
-        .a()
-        .onTrue(AlgaeCommands.Intake(algae))
-        .onFalse(AlgaeCommands.stopMotor(algae));
+    // operatorController
+    //     .a()
+    //     .onTrue(AlgaeCommands.Intake(algae))
+    //     .onFalse(AlgaeCommands.stopMotor(algae));
 
-    // Throws algae when X button is pressed (X)
-    operatorController
-        .x()
-        .onTrue(AlgaeCommands.Outtake(algae))
-        .onFalse(AlgaeCommands.stopMotor(algae));
+    // // Throws algae when X button is pressed (X)
+    // operatorController
+    //     .x()
+    //     .onTrue(AlgaeCommands.Outtake(algae))
+    //     .onFalse(AlgaeCommands.stopMotor(algae));
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

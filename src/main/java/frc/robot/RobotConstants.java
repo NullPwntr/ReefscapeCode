@@ -13,12 +13,12 @@ public class RobotConstants {
 
   public class SwerveSettings {
     public static final double baseSpeedPercentage =
-        0.7; // Base speed without modifications; (X * 100)% of the MAXIMUM speed (1.0)
+        0.5; // Base speed without modifications; (X * 100)% of the MAXIMUM speed (1.0)
 
     public static final double maximumSpeedPercentage =
         1.0; // Keep at 1.0 for absolute maximum speed (100%)
     public static final double minimumSpeedPercentage =
-        0.15; // (X * 100)% of the MAXIMUM speed (100%)
+        0.05; // (X * 100)% of the MAXIMUM speed (100%)
   }
 
   public class CoralSubsystem {
@@ -87,11 +87,11 @@ public class RobotConstants {
     }
 
     public class Config {
-      public static final NeutralModeValue NeutralMode = NeutralModeValue.Coast;
+      public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
 
       public static final InvertedValue MotorInverted =
-          InvertedValue.Clockwise_Positive; // Motor inversion type (CW+ / CCW+)
-      public static final double CurrentLimit = 60.0; // Max current in Amperes
+          InvertedValue.CounterClockwise_Positive; // Motor inversion type (CW+ / CCW+)
+      public static final double CurrentLimit = 40.0; // Max current in Amperes
     }
   }
 }

@@ -65,9 +65,9 @@ public class Coral extends SubsystemBase {
     output = pid.calculate(coralAngleMotor.getPosition().getValueAsDouble());
 
     if (operatorController.getAButton()) {
-      setpoint = 23;
+      setpoint = 24;
     } else {
-      setpoint = 1;
+      setpoint = 7;
     }
 
     pid.setSetpoint(setpoint);
