@@ -25,8 +25,8 @@ public class RobotConstants {
     public static final int IntakeMotorId = 30;
     public static final int GyroId = 0;
 
-    public static final int CANRangeId = 0; // Distance sensor
-    public static final double hasCoralThreshold = 0.0; // The value where the sensor sees a coral
+    public static final int CANRangeId = 51; // Distance sensor
+    public static final double hasCoralThreshold = 0.1; // The value where the sensor sees a coral
 
     public static final double IntakeSpeed = 0.3; // Default Intake Speed
     public static final double OuttakeSpeed = -0.3; // Default Outtake Speed (Negative value)
@@ -50,10 +50,12 @@ public class RobotConstants {
     }
 
     public class Setpoints { // Change to gyro angles (These are motor positions)
-      public static final double NormalScoring = 24.0;
+      public static final double NormalScoring = 25.0;
+      public static final double MiddleScoring = 24.0;
       public static final double TopScoring = 0.0; // Not tested yet
 
-      public static final double HumanIntake = 0.0;
+      public static final double HumanIntake = 4.6;
+      public static final double Home = 0.0;
 
       public static final double Center = 26.2 / 2.0; // (Top of the elevator)
     }
@@ -62,6 +64,8 @@ public class RobotConstants {
       public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
 
       public static final InvertedValue MotorInverted =
+          InvertedValue.Clockwise_Positive; // Motor inverstion type (CW+ / CCW+)
+      public static final InvertedValue AngleMotorInverted =
           InvertedValue.CounterClockwise_Positive; // Motor inverstion type (CW+ / CCW+)
       public static final double CurrentLimit = 40.0; // Max current in Amperes
     }
@@ -69,15 +73,15 @@ public class RobotConstants {
 
   public class AlgaeSubsystem {
     public static final int IntakeMotorId = 31;
-    public static final int PrimaryArmMotorId = 0; // The one connected to the elevator
-    public static final int SecondaryArmMotorId = 0; // The one connected to the
+    public static final int PrimaryArmMotorId = 40; // The one connected to the elevator
+    public static final int SecondaryArmMotorId = 41; // The one connected to the
     // pivot of the primary arm
 
     public static final int PrimaryArmGyroId = 0;
     public static final int SecondaryArmCANCoderId = 0;
 
-    public static final int CANRangeId = 0; // Distance sensor
-    public static final double hasAlgaeThreshold = 0.0; // The value where the sensor sees an algae
+    public static final int CANRangeId = 50; // Distance sensor
+    public static final double hasAlgaeThreshold = 0.1; // The value where the sensor sees an algae
 
     public static final double IntakeSpeed = 0.3; // Default Intake Speed
     public static final double IntakeHoldbackSpeed =
@@ -141,9 +145,7 @@ public class RobotConstants {
       public static final double kD = 0;
 
       public static final double kS = 0;
-      public static final double kG =
-          0.738; // Manually calculated (TODO:: RECALCULATE TO NEW ELEVATOR, THE WEIGHT+GEAR RATIO
-      // CHANGED)
+      public static final double kG = 0.479; // Manually calculated
       public static final double kV = 0;
       public static final double kA = 0;
     }

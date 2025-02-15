@@ -82,9 +82,9 @@ public class Elevator extends SubsystemBase {
   }
 
   /** Sets the setpoint of the Elevator PID */
-  // public void setSetpoint(double setpoint) {
-  //   pid.setSetpoint(setpoint);
-  // }
+  public void setSetpoint(double setpoint) {
+    elevatorSetpoint = setpoint;
+  }
 
   /** Returns the average voltage from both of the elevator motors */
   @AutoLogOutput(key = "Elevator/AverageMotorVolts")
@@ -97,13 +97,13 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (operatorController.getRightBumperButton()) {
-      elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MaxHeight;
-    } else if (operatorController.getLeftBumperButton()) {
-      elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.L2;
-    } else {
-      elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight;
-    }
+    // if (operatorController.getRightBumperButton()) {
+    //   elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MaxHeight;
+    // } else if (operatorController.getLeftBumperButton()) {
+    //   elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.L2;
+    // } else {
+    //   elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight;
+    // }
 
     pid.setSetpoint(elevatorSetpoint);
     pidOutput = pid.calculate(TopMotor.getPosition().getValueAsDouble());

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.CoralCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ElevatorCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Coral;
@@ -188,6 +189,76 @@ public class RobotContainer {
         .y()
         .onTrue(CoralCommands.Outtake(coral))
         .onFalse(CoralCommands.stopMotor(coral));
+
+    operatorController
+        .pov(270)
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.L2),
+                Commands.runOnce(
+                    () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.MiddleScoring),
+                    coral) // First action
+                ))
+        .onFalse(
+            Commands.sequence(
+                CoralCommands.Outtake(coral).withTimeout(0.5),
+                CoralCommands.stopMotor(coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
+                Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
+                ));
+
+    operatorController
+        .pov(180)
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.L1),
+                Commands.runOnce(
+                    () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.NormalScoring),
+                    coral) // First action
+                ))
+        .onFalse(
+            Commands.sequence(
+                // Commands.waitSeconds(0.3), // Wait for 2 seconds
+                CoralCommands.Outtake(coral).withTimeout(0.5),
+                CoralCommands.stopMotor(coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
+                Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
+                ));
+
+    operatorController
+        .pov(90)
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.L1),
+                Commands.runOnce(
+                    () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.NormalScoring),
+                    coral) // First action
+                ))
+        .onFalse(
+            Commands.sequence(
+                // Commands.waitSeconds(0.3), // Wait for 2 seconds
+                CoralCommands.Outtake(coral).withTimeout(0.5),
+                CoralCommands.stopMotor(coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
+                Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
+                ));
+
+    // .onFalse(
+    //     Commands.runOnce(
+    //         () -> {
+    //             ElevatorCommands.SetSetpoint(elevator,
+    // RobotConstants.ElevatorSubsystem.Setpoints.Home));
+    //         },
+    //         coral));
 
     // Starts Intaking for algae when A button is pressed (A)
     // operatorController

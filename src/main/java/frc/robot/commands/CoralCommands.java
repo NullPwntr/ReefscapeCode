@@ -12,7 +12,9 @@ public class CoralCommands {
   public static Command Intake(Coral coral) {
     return Commands.run(
         () -> {
-          coral.coralIntake.set(RobotConstants.CoralSubsystem.IntakeSpeed);
+          if (!coral.hasCoral()) {
+            coral.coralIntake.set(RobotConstants.CoralSubsystem.IntakeSpeed);
+          }
         },
         coral);
   }
@@ -33,11 +35,15 @@ public class CoralCommands {
         coral);
   }
 
-  // public static Command setAngle(Coral coral, double angle) {
-  //   return Commands.runOnce(
-  //           () -> {
-  //             // do this
-  //           });
-  // }
+  public static Command setAngle(Coral coral, double angle) {
+    return Commands.runOnce(() -> {});
+  }
 
+  public static Command SetIsRunningCommand(Coral coral, boolean flag) {
+    return Commands.runOnce(
+        () -> {
+          coral.setIsRunningCommand(flag);
+        },
+        coral);
+  }
 }
