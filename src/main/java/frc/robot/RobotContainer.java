@@ -30,6 +30,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final Coral coral;
   private final Algae algae;
   private final Elevator elevator;
+  private final LEDs led;
 
   // Controllers
   private final CommandXboxController driverController =
@@ -77,6 +79,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
+        led = new LEDs();
         break;
 
       case SIM:
@@ -92,6 +95,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
+        led = new LEDs();
         break;
 
       default:
@@ -106,6 +110,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
+        led = new LEDs();
         break;
     }
 
@@ -224,6 +229,15 @@ public class RobotContainer {
         .y()
         .onTrue(CoralCommands.Outtake(coral))
         .onFalse(CoralCommands.stopMotor(coral));
+
+    operatorController
+        .leftBumper()
+        .onTrue(
+            Commands.sequence(
+                AlgaeCommands.SetIsRunningCommand(algae, true), AlgaeCommands.Outtake(algae)))
+        .onFalse(
+            Commands.sequence(
+                AlgaeCommands.SetIsRunningCommand(algae, false), AlgaeCommands.stopMotor(algae)));
 
     operatorController
         .pov(270)

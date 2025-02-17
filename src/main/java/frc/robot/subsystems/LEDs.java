@@ -1,84 +1,213 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import com.ctre.phoenix.led.*;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
+import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
+import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class LEDs extends SubsystemBase {
-  private final AddressableLED led = new AddressableLED(RobotConstants.LED.pwmPort);
-  private final int length = RobotConstants.LED.ledCount;
+  private final CANdle m_candle = new CANdle(RobotConstants.LED.CANdleId, "CAN");
+  private final int LedCount = 150 + 8;
 
-  private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(length);
+  private Animation m_toAnimate = null;
 
-  private String ledState = "solid"; // Default state
-  private int rainbowOffset = 0; // Rainbow animation offset
+  public enum AnimationTypes {
+    ColorFlow,
+    Fire,
+    Larson,
+    Rainbow,
+    RgbFade,
+    SingleFade,
+    Strobe,
+    Twinkle,
+    TwinkleOff,
+    SetAll
+  }
+
+  private AnimationTypes m_currentAnimation;
 
   public LEDs() {
-    led.setLength(ledBuffer.getLength());
-    led.setData(ledBuffer);
-    led.start();
-
-    setState("solid"); // Default to solid color
+    changeAnimation(AnimationTypes.SetAll);
+    CANdleConfiguration configAll = new CANdleConfiguration();
+    configAll.statusLedOffWhenActive = true;
+    configAll.disableWhenLOS = false;
+    configAll.stripType = LEDStripType.GRB;
+    configAll.brightnessScalar = 0.1;
+    configAll.vBatOutputMode = VBatOutputMode.Modulated;
+    m_candle.configAllSettings(configAll, 100);
   }
 
-  /** Sets the LED state, changing its behavior */
-  public void setState(String newState) {
-    this.ledState = newState;
-  }
-
-  /** Returns the LED state */
-  @AutoLogOutput(key = "LEDs/State")
-  public String getState() {
-    return ledState;
-  }
-
-  /** Sets all LEDs to a solid color */
-  private void setSolidColor(int r, int g, int b) {
-    for (int i = 0; i < length; i++) {
-      ledBuffer.setRGB(i, r, g, b);
+  public void incrementAnimation() {
+    switch (m_currentAnimation) {
+      case ColorFlow:
+        changeAnimation(AnimationTypes.Fire);
+        break;
+      case Fire:
+        changeAnimation(AnimationTypes.Larson);
+        break;
+      case Larson:
+        changeAnimation(AnimationTypes.Rainbow);
+        break;
+      case Rainbow:
+        changeAnimation(AnimationTypes.RgbFade);
+        break;
+      case RgbFade:
+        changeAnimation(AnimationTypes.SingleFade);
+        break;
+      case SingleFade:
+        changeAnimation(AnimationTypes.Strobe);
+        break;
+      case Strobe:
+        changeAnimation(AnimationTypes.Twinkle);
+        break;
+      case Twinkle:
+        changeAnimation(AnimationTypes.TwinkleOff);
+        break;
+      case TwinkleOff:
+        changeAnimation(AnimationTypes.ColorFlow);
+        break;
+      case SetAll:
+        changeAnimation(AnimationTypes.ColorFlow);
+        break;
     }
-    led.setData(ledBuffer);
   }
 
-  /** Fades LEDs in and out */
-  private void breatheEffect(int r, int g, int b, double speed) {
-    double brightness = (Math.sin(System.currentTimeMillis() / (1000 / speed)) + 1) / 2.0;
-    int adjustedR = (int) (r * brightness);
-    int adjustedG = (int) (g * brightness);
-    int adjustedB = (int) (b * brightness);
-    setSolidColor(adjustedR, adjustedG, adjustedB);
-  }
-
-  /** Creates a moving rainbow effect */
-  private void rainbowEffect() {
-    for (int i = 0; i < length; i++) {
-      int hue = (i * 180 / length + rainbowOffset) % 180;
-      ledBuffer.setHSV(i, hue, 255, 128);
+  public void decrementAnimation() {
+    switch (m_currentAnimation) {
+      case ColorFlow:
+        changeAnimation(AnimationTypes.TwinkleOff);
+        break;
+      case Fire:
+        changeAnimation(AnimationTypes.ColorFlow);
+        break;
+      case Larson:
+        changeAnimation(AnimationTypes.Fire);
+        break;
+      case Rainbow:
+        changeAnimation(AnimationTypes.Larson);
+        break;
+      case RgbFade:
+        changeAnimation(AnimationTypes.Rainbow);
+        break;
+      case SingleFade:
+        changeAnimation(AnimationTypes.RgbFade);
+        break;
+      case Strobe:
+        changeAnimation(AnimationTypes.SingleFade);
+        break;
+      case Twinkle:
+        changeAnimation(AnimationTypes.Strobe);
+        break;
+      case TwinkleOff:
+        changeAnimation(AnimationTypes.Twinkle);
+        break;
+      case SetAll:
+        changeAnimation(AnimationTypes.ColorFlow);
+        break;
     }
-    led.setData(ledBuffer);
-    rainbowOffset += 3; // Move the rainbow forward
+  }
+
+  public void setColors() {
+    changeAnimation(AnimationTypes.SetAll);
+  }
+
+  /* Wrappers so we can access the CANdle from the subsystem */
+  public double getVbat() {
+    return m_candle.getBusVoltage();
+  }
+
+  public double get5V() {
+    return m_candle.get5VRailVoltage();
+  }
+
+  public double getCurrent() {
+    return m_candle.getCurrent();
+  }
+
+  public double getTemperature() {
+    return m_candle.getTemperature();
+  }
+
+  public void configBrightness(double percent) {
+    m_candle.configBrightnessScalar(percent, 0);
+  }
+
+  public void configLos(boolean disableWhenLos) {
+    m_candle.configLOSBehavior(disableWhenLos, 0);
+  }
+
+  public void configLedType(LEDStripType type) {
+    m_candle.configLEDType(type, 0);
+  }
+
+  public void configStatusLedBehavior(boolean offWhenActive) {
+    m_candle.configStatusLedState(offWhenActive, 0);
+  }
+
+  public void changeAnimation(AnimationTypes toChange) {
+    m_currentAnimation = toChange;
+
+    switch (toChange) {
+      case ColorFlow:
+        m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LedCount, Direction.Forward);
+        break;
+      case Fire:
+        m_toAnimate = new FireAnimation(0.5, 0.7, LedCount, 0.7, 0.5);
+        break;
+      case Larson:
+        m_toAnimate = new LarsonAnimation(0, 255, 46, 0, 1, LedCount, BounceMode.Front, 3);
+        break;
+      case Rainbow:
+        m_toAnimate = new RainbowAnimation(1, 0.1, LedCount);
+        break;
+      case RgbFade:
+        m_toAnimate = new RgbFadeAnimation(0.7, 0.4, LedCount);
+        break;
+      case SingleFade:
+        m_toAnimate = new SingleFadeAnimation(50, 2, 200, 0, 0.5, LedCount);
+        break;
+      case Strobe:
+        m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, LedCount);
+        break;
+      case Twinkle:
+        m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, LedCount, TwinklePercent.Percent6);
+        break;
+      case TwinkleOff:
+        m_toAnimate =
+            new TwinkleOffAnimation(70, 90, 175, 0, 0.8, LedCount, TwinkleOffPercent.Percent100);
+        break;
+      case SetAll:
+        m_toAnimate = null;
+        break;
+    }
+    // System.out.println("Changed to " + m_currentAnimation.toString());
   }
 
   @Override
   public void periodic() {
-    // Use switch-case to handle LED states
-    switch (ledState) {
-      case "solid":
-        setSolidColor(0, 255, 0); // Default to green
-        break;
-      case "breathe":
-        breatheEffect(255, 0, 0, 2.0); // Red breathing effect
-        break;
-      case "rainbow":
-        rainbowEffect();
-        break;
-      case "off":
-        setSolidColor(0, 0, 0); // Turn off LEDs
-        break;
-      default:
-        setSolidColor(255, 255, 255); // White as a fallback
-    }
+    // This method will be called once per scheduler run
+    // if(m_toAnimate == null) {
+    //     m_candle.setLEDs((int)(joystick.getLeftTriggerAxis() * 255),
+    //                       (int)(joystick.getRightTriggerAxis() * 255),
+    //                       (int)(joystick.getLeftX() * 255));
+    // } else {
+    changeAnimation(AnimationTypes.SingleFade);
+    m_candle.animate(m_toAnimate);
+
+    m_candle.modulateVBatOutput(1);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
   }
 }

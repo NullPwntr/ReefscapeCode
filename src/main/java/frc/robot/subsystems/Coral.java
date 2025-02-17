@@ -118,7 +118,7 @@ public class Coral extends SubsystemBase {
 
     if (hasCoral()) {
       if (isRunningCommand == false) {
-        setpoint = RobotConstants.CoralSubsystem.Setpoints.Center;
+        setpoint = RobotConstants.CoralSubsystem.Setpoints.HumanIntake;
       }
     } else {
       if (isRunningCommand == false) {

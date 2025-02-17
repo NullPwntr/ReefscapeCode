@@ -140,7 +140,7 @@ public class RobotConstants {
     public static final int BottomMotorId = 33;
 
     public static final double AscendMaxSpeed = 0.5;
-    public static final double DescendMaxSpeed = -0.2; // (Negative value)
+    public static final double DescendMaxSpeed = -0.4; // (Negative value)
 
     public class PIDFF {
       public static final double kP = 0.05; // 0.1;
@@ -177,7 +177,7 @@ public class RobotConstants {
   }
 
   public class LED {
-    public static final int pwmPort = 0;
-    public static final int ledCount = 0;
+    public static final int CANdleId = 54;
+    public static final int ledCount = 149;
   }
 }
