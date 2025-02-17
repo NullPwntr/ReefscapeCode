@@ -10,15 +10,18 @@ public class AlgaeCommands {
   private AlgaeCommands() {}
 
   public static Command Intake(Algae algae) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> {
-          algae.algaeIntake.set(RobotConstants.AlgaeSubsystem.IntakeSpeed);
+          // Only intake when the robot doesn't have an algae.
+          if (algae.hasAlgae() == false) {
+            algae.algaeIntake.set(RobotConstants.AlgaeSubsystem.IntakeSpeed);
+          }
         },
         algae);
   }
 
   public static Command Outtake(Algae algae) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> {
           algae.algaeIntake.set(RobotConstants.AlgaeSubsystem.OuttakeSpeed);
         },
@@ -33,11 +36,25 @@ public class AlgaeCommands {
         algae);
   }
 
-  // public static Command setAngle(Coral coral, double angle) {
-  //   return Commands.runOnce(
-  //           () -> {
-  //             // do this
-  //           });
-  // }
+  public static Command setPrimarySetpoint(Algae algae, double setpoint) {
+    return Commands.runOnce(
+        () -> {
+          algae.setPrimaryArmSetpoint(setpoint);
+        });
+  }
 
+  public static Command setSecondarySetpoint(Algae algae, double setpoint) {
+    return Commands.runOnce(
+        () -> {
+          algae.setSecondaryArmSetpoint(setpoint);
+        });
+  }
+
+  public static Command SetIsRunningCommand(Algae algae, boolean flag) {
+    return Commands.runOnce(
+        () -> {
+          algae.setIsRunningCommand(flag);
+        },
+        algae);
+  }
 }

@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class RobotConstants {
   public class Controllers {
@@ -78,7 +79,9 @@ public class RobotConstants {
     // pivot of the primary arm
 
     public static final int PrimaryArmGyroId = 0;
-    public static final int SecondaryArmCANCoderId = 0;
+    public static final int SecondaryArmCANCoderId = 28;
+    public static final SensorDirectionValue SecondaryArmCANCoderDirection =
+        SensorDirectionValue.Clockwise_Positive;
 
     public static final int CANRangeId = 50; // Distance sensor
     public static final double hasAlgaeThreshold = 0.1; // The value where the sensor sees an algae
@@ -157,7 +160,7 @@ public class RobotConstants {
       public static final double L0 = -1.0; // -1.0 is basically 0
       public static final double L1 = -1.0; // -1.0 is basically 0
       public static final double L2 = 22.5;
-      public static final double L3 = 0.0; // not tested yet
+      public static final double L3 = 45.0; // not tested yet
 
       public static final double AlgaeScoringHeight = 0.0; // not tested yet (probably MaxHeight)
       public static final double ProcessorScoringHeight =

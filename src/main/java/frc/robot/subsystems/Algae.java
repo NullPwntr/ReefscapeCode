@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -23,12 +25,18 @@ public class Algae extends SubsystemBase {
   public TalonFX PrimaryArm = new TalonFX(RobotConstants.AlgaeSubsystem.PrimaryArmMotorId);
   public TalonFX SecondaryArm = new TalonFX(RobotConstants.AlgaeSubsystem.SecondaryArmMotorId);
 
+  public CANcoder secondaryArmCANCoder =
+      new CANcoder(RobotConstants.AlgaeSubsystem.SecondaryArmCANCoderId);
+
   public CANrange sensor = new CANrange(RobotConstants.AlgaeSubsystem.CANRangeId);
 
-  public PIDController primaryPID = new PIDController(0, 0, 0);
-  public PIDController secondaryPID = new PIDController(4, 0, 0);
+  public PIDController primaryPID = new PIDController(0.005, 0, 0);
+  public PIDController secondaryPID =
+      new PIDController(0.002, 0, 0.0000143); // wtf (near perfect gains)
 
   XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
+
+  boolean isRunningCommand = false;
 
   public Algae() {
     SmartDashboard.putNumber("AlgaeSpeed", 0.3);
@@ -36,11 +44,14 @@ public class Algae extends SubsystemBase {
     var Config = new MotorOutputConfigs();
     Config.NeutralMode = RobotConstants.AlgaeSubsystem.Config.NeutralMode;
     Config.Inverted = InvertedValue.CounterClockwise_Positive;
+    var SecondaryConfig = new MotorOutputConfigs();
+    SecondaryConfig.NeutralMode = RobotConstants.AlgaeSubsystem.Config.NeutralMode;
+    SecondaryConfig.Inverted = InvertedValue.Clockwise_Positive;
 
     algaeIntake.getConfigurator().apply(Config);
 
-    PrimaryArm.getConfigurator().apply(Config);
-    SecondaryArm.getConfigurator().apply(Config);
+    PrimaryArm.getConfigurator().apply(SecondaryConfig);
+    SecondaryArm.getConfigurator().apply(SecondaryConfig);
 
     PrimaryArm.getConfigurator().setPosition(0.0);
     SecondaryArm.getConfigurator().setPosition(0.0);
@@ -48,7 +59,19 @@ public class Algae extends SubsystemBase {
     primaryPID.setSetpoint(0);
     secondaryPID.setSetpoint(0);
 
-    SmartDashboard.putNumber("ttt", 0.0);
+    CANcoderConfiguration CANConfig = new CANcoderConfiguration();
+    CANConfig.MagnetSensor.SensorDirection =
+        RobotConstants.AlgaeSubsystem.SecondaryArmCANCoderDirection;
+
+    secondaryArmCANCoder.getConfigurator().apply(CANConfig);
+
+    // SmartDashboard.putNumber("ttt", 0.005);
+    // SmartDashboard.putNumber("tttsetpoint", 35.0);
+    // SmartDashboard.putNumber("tttkp", 0);
+    // SmartDashboard.putNumber("tttki", 0);
+    // SmartDashboard.putNumber("tttkd", 0);
+    // SmartDashboard.putNumber("tttizone", 0);
+    // SmartDashboard.putNumber("tttkg", 0.56);
   }
 
   @AutoLogOutput(key = "Algae/Sensor/Distance")
@@ -57,32 +80,77 @@ public class Algae extends SubsystemBase {
   }
 
   @AutoLogOutput(key = "Algae/HasAlgae")
-  public boolean hasCoral() {
+  public boolean hasAlgae() {
     return (sensor.getDistance().getValueAsDouble()
-            <= RobotConstants.AlgaeSubsystem.hasAlgaeThreshold)
+                <= RobotConstants.AlgaeSubsystem.hasAlgaeThreshold
+            && sensor.getAmbientSignal().getValueAsDouble() <= 10)
         ? true
         : false;
+  }
+
+  public void setPrimaryArmSetpoint(double setpoint) {
+    primaryPID.setSetpoint(setpoint);
+  }
+
+  public void setSecondaryArmSetpoint(double setpoint) {
+    secondaryPID.setSetpoint(setpoint);
+  }
+
+  @AutoLogOutput(key = "Algae/Primary Arm/Position")
+  public double getPrimaryArmPosition() {
+    return (PrimaryArm.getPosition().getValueAsDouble()) * 10; // offset
+  }
+
+  @AutoLogOutput(key = "Algae/Secondary Arm/Position")
+  public double getSecondaryArmPosition() {
+    return (secondaryArmCANCoder.getPosition().getValueAsDouble()) * 100; // offset
+  }
+
+  public void setIsRunningCommand(boolean flag) {
+    isRunningCommand = flag;
   }
 
   @Override
   public void periodic() {
     // if (operatorController.getAButton()) {
     //   // algaeIntake.set(SmartDashboard.getNumber("AlgaeSpeed", 0.3));
-    //   algaeIntake.set(0.5);
+    //   // algaeIntake.set(0.5);
+    //   // secondaryPID.setSetpoint(50);
+    //   primaryPID.setSetpoint(90);
+    //   secondaryPID.setSetpoint(70);
     // } else if (operatorController.getXButton()) {
     //   algaeIntake.set(-0.5);
     // } else {
-    //   algaeIntake.set(0.08);
+    //   algaeIntake.set(0.06);
+    //   secondaryPID.setSetpoint(0);
+    //   primaryPID.setSetpoint(0);
     // }
 
-    // secondaryPID.setSetpoint(0.5);
+    // secondaryPID.setP(SmartDashboard.getNumber("tttkp", 0));
+    // secondaryPID.setI(SmartDashboard.getNumber("tttki", 0));
+    // secondaryPID.setD(SmartDashboard.getNumber("tttkd", 0));
+    // // secondaryPID.setP(SmartDashboard.getNumber("ttt", 0.005));
 
-    // SecondaryArm.set(secondaryPID.calculate(SecondaryArm.getPosition().getValueAsDouble()));
+    // secondaryPID.setIZone(SmartDashboard.getNumber("tttizone", 0.0));
+    // secondaryPID.setSetpoint(SmartDashboard.getNumber("tttsetpoint", 35.0));
 
-    SecondaryArm.set(SmartDashboard.getNumber("ttt", 0.0));
+    if (hasAlgae()) {
+      isRunningCommand = false;
+    }
+
+    if (hasAlgae() && isRunningCommand == false) {
+      setSecondaryArmSetpoint(0);
+      algaeIntake.set(0.06);
+    }
+
+    PrimaryArm.setVoltage((primaryPID.calculate(getPrimaryArmPosition()) * 12.0));
+    SecondaryArm.setVoltage((secondaryPID.calculate(getSecondaryArmPosition()) * 12.0));
+
+    // SecondaryArm.set(SmartDashboard.getNumber("ttt", 0.0));
 
     SmartDashboard.putNumber("AMPARM", SecondaryArm.getSupplyCurrent().getValueAsDouble());
-    Logger.recordOutput("Algae/Primary Arm/Position", PrimaryArm.getPosition().getValueAsDouble());
+    // Logger.recordOutput("Algae/Primary Arm/Position",
+    // PrimaryArm.getPosition().getValueAsDouble());
     Logger.recordOutput(
         "Algae/Secondary Arm/Position", SecondaryArm.getPosition().getValueAsDouble());
     Logger.recordOutput("Algae/Motion/PrimarySetpoint", primaryPID.getSetpoint());

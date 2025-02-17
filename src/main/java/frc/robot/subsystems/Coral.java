@@ -121,7 +121,9 @@ public class Coral extends SubsystemBase {
         setpoint = RobotConstants.CoralSubsystem.Setpoints.Center;
       }
     } else {
-      setpoint = RobotConstants.CoralSubsystem.Setpoints.HumanIntake;
+      if (isRunningCommand == false) {
+        setpoint = RobotConstants.CoralSubsystem.Setpoints.HumanIntake;
+      }
     }
 
     pid.setSetpoint(setpoint);

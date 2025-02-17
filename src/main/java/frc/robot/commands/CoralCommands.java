@@ -12,7 +12,8 @@ public class CoralCommands {
   public static Command Intake(Coral coral) {
     return Commands.run(
         () -> {
-          if (!coral.hasCoral()) {
+          // Only intake when the robot doesn't have a coral.
+          if (coral.hasCoral() == false) {
             coral.coralIntake.set(RobotConstants.CoralSubsystem.IntakeSpeed);
           }
         },
@@ -23,6 +24,14 @@ public class CoralCommands {
     return Commands.run(
         () -> {
           coral.coralIntake.set(RobotConstants.CoralSubsystem.OuttakeSpeed);
+        },
+        coral);
+  }
+
+  public static Command OuttakeSlow(Coral coral) {
+    return Commands.run(
+        () -> {
+          coral.coralIntake.set(-0.25);
         },
         coral);
   }
