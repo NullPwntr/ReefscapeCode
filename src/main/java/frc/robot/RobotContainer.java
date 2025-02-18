@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AlgaeCommands;
@@ -59,6 +60,8 @@ public class RobotContainer {
       new CommandXboxController(RobotConstants.Controllers.DriverPortId);
   private final CommandXboxController operatorController =
       new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
+  private final CommandXboxController debugController =
+      new CommandXboxController(RobotConstants.Controllers.DebugPortId);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -209,7 +212,7 @@ public class RobotContainer {
             Commands.sequence(
                 AlgaeCommands.Intake(algae),
                 ElevatorCommands.SetSetpoint(
-                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.L3),
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.TopAlgae),
                 AlgaeCommands.setSecondarySetpoint(algae, 30)))
         .onFalse(
             Commands.sequence(
@@ -218,15 +221,29 @@ public class RobotContainer {
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight)));
 
+    // Top algae intake
+    operatorController
+        .y()
+        .onTrue(
+            Commands.sequence(
+                AlgaeCommands.SetIsRunningCommand(algae, true),
+                AlgaeCommands.Intake(algae),
+                AlgaeCommands.setSecondarySetpoint(algae, 60)))
+        .onFalse(
+            Commands.sequence(
+                AlgaeCommands.stopMotor(algae),
+                AlgaeCommands.setSecondarySetpoint(algae, 0),
+                AlgaeCommands.SetIsRunningCommand(algae, false)));
+
     // Starts Intaking for coral when B button is pressed (B)
     operatorController
         .b()
         .onTrue(CoralCommands.Intake(coral))
         .onFalse(CoralCommands.stopMotor(coral));
 
-    // Throws coral when Y button is pressed (Y)
+    // Throws coral when RB button is pressed (RB)
     operatorController
-        .y()
+        .rightBumper()
         .onTrue(CoralCommands.Outtake(coral))
         .onFalse(CoralCommands.stopMotor(coral));
 
@@ -234,10 +251,14 @@ public class RobotContainer {
         .leftBumper()
         .onTrue(
             Commands.sequence(
-                AlgaeCommands.SetIsRunningCommand(algae, true), AlgaeCommands.Outtake(algae)))
+                AlgaeCommands.SetIsRunningCommand(algae, true),
+                AlgaeCommands.SetIsLBHeld(algae, true),
+                AlgaeCommands.Outtake(algae)))
         .onFalse(
             Commands.sequence(
-                AlgaeCommands.SetIsRunningCommand(algae, false), AlgaeCommands.stopMotor(algae)));
+                AlgaeCommands.SetIsRunningCommand(algae, false),
+                AlgaeCommands.SetIsLBHeld(algae, false),
+                AlgaeCommands.stopMotor(algae)));
 
     operatorController
         .pov(270)
@@ -252,8 +273,8 @@ public class RobotContainer {
                 ))
         .onFalse(
             Commands.sequence(
-                CoralCommands.Outtake(coral).withTimeout(0.5),
-                CoralCommands.stopMotor(coral),
+                // CoralCommands.Outtake(coral).withTimeout(0.5),
+                // CoralCommands.stopMotor(coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
@@ -272,9 +293,8 @@ public class RobotContainer {
                 ))
         .onFalse(
             Commands.sequence(
-                // Commands.waitSeconds(0.3), // Wait for 2 seconds
-                CoralCommands.Outtake(coral).withTimeout(0.5),
-                CoralCommands.stopMotor(coral),
+                // CoralCommands.Outtake(coral).withTimeout(0.5),
+                // CoralCommands.stopMotor(coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
@@ -293,7 +313,6 @@ public class RobotContainer {
                 ))
         .onFalse(
             Commands.sequence(
-                // Commands.waitSeconds(0.3), // Wait for 2 seconds
                 CoralCommands.OuttakeSlow(coral).withTimeout(3),
                 Commands.runOnce(
                         () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home),
@@ -304,6 +323,57 @@ public class RobotContainer {
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
                 ));
+
+    operatorController
+        .pov(0)
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.L3),
+                new WaitCommand(1),
+                Commands.runOnce(
+                    () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.NormalScoring),
+                    coral) // First action
+                ))
+        .onFalse(
+            Commands.sequence(
+                // Commands.waitSeconds(0.3), // Wait for 2 seconds
+                // CoralCommands.OuttakeSlow(coral).withTimeout(1),
+                Commands.runOnce(
+                        () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home),
+                        coral)
+                    .withTimeout(0), // First action
+                // CoralCommands.stopMotor(coral),
+                ElevatorCommands.SetSetpoint(
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
+                Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
+                ));
+
+    debugController
+        .a()
+        .onTrue(ElevatorCommands.SetSetpoint(elevator, 77))
+        .onFalse(ElevatorCommands.SetSetpoint(elevator, 0));
+    debugController
+        .b()
+        .onTrue(
+            Commands.sequence(
+                AlgaeCommands.SetIsRunningCommand(algae, true),
+                AlgaeCommands.setSecondarySetpoint(algae, 50),
+                new WaitCommand(0.25),
+                AlgaeCommands.setPrimarySetpoint(algae, 115),
+                AlgaeCommands.setSecondarySetpoint(algae, 50),
+                new WaitCommand(0.25),
+                ElevatorCommands.SetSetpoint(elevator, 77)))
+        .onFalse(
+            Commands.sequence(
+                ElevatorCommands.SetSetpoint(elevator, 0),
+                new WaitCommand(2),
+                AlgaeCommands.setSecondarySetpoint(algae, 125),
+                new WaitCommand(1),
+                AlgaeCommands.setPrimarySetpoint(algae, 0),
+                AlgaeCommands.setSecondarySetpoint(algae, 0),
+                AlgaeCommands.SetIsRunningCommand(algae, false)));
 
     // .onFalse(
     //     Commands.runOnce(

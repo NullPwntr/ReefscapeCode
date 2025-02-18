@@ -57,4 +57,12 @@ public class AlgaeCommands {
         },
         algae);
   }
+
+  public static Command SetIsLBHeld(Algae algae, boolean flag) {
+    return Commands.runOnce(
+        () -> {
+          algae.setIsLBHeld(flag);
+        },
+        algae);
+  }
 }

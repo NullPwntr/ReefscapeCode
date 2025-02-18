@@ -35,8 +35,12 @@ public class Algae extends SubsystemBase {
       new PIDController(0.002, 0, 0.0000143); // wtf (near perfect gains)
 
   XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
+  XboxController debugController = new XboxController(RobotConstants.Controllers.DebugPortId);
 
+  @AutoLogOutput(key = "Algae/IsRunningCommand")
   boolean isRunningCommand = false;
+
+  boolean LBHeld = false;
 
   public Algae() {
     SmartDashboard.putNumber("AlgaeSpeed", 0.3);
@@ -110,6 +114,10 @@ public class Algae extends SubsystemBase {
     isRunningCommand = flag;
   }
 
+  public void setIsLBHeld(boolean flag) {
+    LBHeld = flag;
+  }
+
   @Override
   public void periodic() {
     // if (operatorController.getAButton()) {
@@ -134,7 +142,7 @@ public class Algae extends SubsystemBase {
     // secondaryPID.setIZone(SmartDashboard.getNumber("tttizone", 0.0));
     // secondaryPID.setSetpoint(SmartDashboard.getNumber("tttsetpoint", 35.0));
 
-    if (hasAlgae()) {
+    if (hasAlgae() && LBHeld == false) {
       isRunningCommand = false;
     }
 
@@ -142,6 +150,23 @@ public class Algae extends SubsystemBase {
       setSecondaryArmSetpoint(0);
       algaeIntake.set(0.06);
     }
+
+    // if (debugController.getLeftBumperButton()) {
+    //   algaeIntake.set(-3.0);
+    // } else {
+    //   if (hasAlgae() && isRunningCommand == false) {
+    //     setSecondaryArmSetpoint(0);
+    //     algaeIntake.set(0.06);
+    //   } else {
+    //     algaeIntake.set(0.06);
+    //   }
+    // }
+
+    // if (debugController.getLeftBumperButton()) {
+    //   algaeIntake.set(-3.0);
+    // } else {
+    //   algaeIntake.set(0);
+    // }
 
     PrimaryArm.setVoltage((primaryPID.calculate(getPrimaryArmPosition()) * 12.0));
     SecondaryArm.setVoltage((secondaryPID.calculate(getSecondaryArmPosition()) * 12.0));

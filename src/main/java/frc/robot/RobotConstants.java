@@ -9,7 +9,7 @@ public class RobotConstants {
     public static final int DriverPortId = 0;
     public static final int OperatorPortId = 1;
 
-    // public static final int DebugPortId = 5; // Future use
+    public static final int DebugPortId = 5; // Future use
   }
 
   public class SwerveSettings {
@@ -36,7 +36,7 @@ public class RobotConstants {
       public static final int MotorId = 34;
 
       public static final double LaunchMaxSpeed = 0.4;
-      public static final double ReturnMaxSpeed = -0.1;
+      public static final double ReturnMaxSpeed = -0.3;
 
       public class PIDFF {
         public static final double kP = 0.08;
@@ -52,7 +52,7 @@ public class RobotConstants {
 
     public class Setpoints { // Change to gyro angles (These are motor positions)
       public static final double NormalScoring = 25.0;
-      public static final double MiddleScoring = 24.0;
+      public static final double MiddleScoring = 24.5;
       public static final double TopScoring = 0.0; // Not tested yet
 
       public static final double HumanIntake = 4.6;
@@ -139,7 +139,7 @@ public class RobotConstants {
     public static final int TopMotorId = 32;
     public static final int BottomMotorId = 33;
 
-    public static final double AscendMaxSpeed = 0.5;
+    public static final double AscendMaxSpeed = 0.5; // 0.5
     public static final double DescendMaxSpeed = -0.4; // (Negative value)
 
     public class PIDFF {
@@ -159,8 +159,9 @@ public class RobotConstants {
 
       public static final double L0 = -1.0; // -1.0 is basically 0
       public static final double L1 = -1.0; // -1.0 is basically 0
-      public static final double L2 = 22.5;
-      public static final double L3 = 45.0; // not tested yet
+      public static final double L2 = 21.0; // 22.5
+      public static final double L3 = 58.5; // not tested yet
+      public static final double TopAlgae = 45.0; // not tested yet
 
       public static final double AlgaeScoringHeight = 0.0; // not tested yet (probably MaxHeight)
       public static final double ProcessorScoringHeight =
