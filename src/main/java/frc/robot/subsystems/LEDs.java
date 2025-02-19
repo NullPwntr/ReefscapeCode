@@ -7,36 +7,25 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class LEDs extends SubsystemBase {
   private final CANdle m_candle = new CANdle(RobotConstants.LED.CANdleId, "CAN");
   private final int LedCount = 150 + 8;
 
   public String robotState = "";
-  public String currentColor = "";
+
+  @AutoLogOutput(key = "LEDs/Current Color")
+  public String currentColor = "DEFAULT";
+
   private boolean robotEnabled = false;
   private boolean isRunningCommand = false;
 
-  
   private boolean bootUpAnimationComplete = false;
   private int step = 0;
-
-  public enum AnimationTypes {
-    ColorFlow,
-    Fire,
-    Larson,
-    Rainbow,
-    RgbFade,
-    SingleFade,
-    Strobe,
-    Twinkle,
-    TwinkleOff,
-    SetAll
-  }
 
   public LEDs() {
     CANdleConfiguration configAll = new CANdleConfiguration();
@@ -46,10 +35,8 @@ public class LEDs extends SubsystemBase {
     configAll.brightnessScalar = 0.5;
     configAll.vBatOutputMode = VBatOutputMode.Modulated;
     m_candle.configAllSettings(configAll, 100);
-
-    bootUpAnimation(); // runs once
+    m_candle.setLEDs(0, 0, 0);
   }
-
 
   /* Wrappers so we can access the CANdle from the subsystem */
   public double getVbat() {
@@ -84,52 +71,55 @@ public class LEDs extends SubsystemBase {
     m_candle.configStatusLedState(offWhenActive, 0);
   }
 
-
   public void bootUpAnimation() {
     if (bootUpAnimationComplete) return;
 
     // Clear all LEDs
-    m_candle.setLEDs(0, 0, 0, 0, 0, LedCount);
+    // m_candle.setLEDs(0, 0, 0, 0, 0, LedCount);
 
     // Light up LEDs from both ends inward
     for (int i = 0; i <= step; i++) {
-        int leftIndex = i;
-        int rightIndex = LedCount - 1 - i;
+      int leftIndex = i;
+      int rightIndex = LedCount - 1 - i;
 
-        // Set color (e.g., warm orange)
-        m_candle.setLEDs(255, 100, 0, 0, leftIndex, 1);
-        m_candle.setLEDs(255, 100, 0, 0, rightIndex, 1);
+      // Set color (e.g., warm orange)
+      m_candle.setLEDs(255, 15, 0, 0, leftIndex, 1);
+      m_candle.setLEDs(255, 15, 0, 0, rightIndex, 1);
     }
 
     // Move to the next step
-    step++;
+    step = step + 2;
 
     // Check if the animation is complete
     if (step >= LedCount / 2) {
       bootUpAnimationComplete = true;
     }
-}
+  }
 
-  public void setIsRunningCommand(boolean flag){
+  public void setIsRunningCommand(boolean flag) {
     isRunningCommand = flag;
   }
 
-  public void setColor(String color){
+  public void setColor(String color) {
     switch (color) {
       case "OFF":
         m_candle.setLEDs(0, 0, 0);
         currentColor = "OFF";
         break;
       case "DEFAULT": // ORANGE
-        m_candle.setLEDs(255, 30, 0);
+        m_candle.setLEDs(255, 15, 0);
         currentColor = "DEFAULT";
         break;
       case "WHITE":
-        m_candle.setLEDs(255, 255, 255);
+        m_candle.setLEDs(255, 255, 255, 255, 0, LedCount);
         currentColor = "WHITE";
         break;
       case "CYAN":
-        m_candle.setLEDs(0, 170, 255);
+        m_candle.setLEDs(0, 40, 255);
+        currentColor = "CYAN";
+        break;
+      case "BLUE":
+        m_candle.setLEDs(0, 0, 255);
         currentColor = "CYAN";
         break;
       case "GREEN":
@@ -147,13 +137,18 @@ public class LEDs extends SubsystemBase {
   public void periodic() {
     robotEnabled = DriverStation.isEnabled();
 
-    if(isRunningCommand == false && bootUpAnimationComplete && robotEnabled){
-      setColor("DEFAULT");
+    if (bootUpAnimationComplete == false) {
+      bootUpAnimation();
     }
 
-    if(robotEnabled == false && bootUpAnimationComplete){
-      m_candle.animate(new SingleFadeAnimation(255, 30, 0, 0, 0.5, LedCount));
+    // if (isRunningCommand == false && bootUpAnimationComplete && robotEnabled) {
+    if (isRunningCommand == false && robotEnabled) {
+      setColor(currentColor);
     }
+
+    // if (robotEnabled == false && bootUpAnimationComplete) {
+    //   m_candle.animate(new SingleFadeAnimation(255, 30, 0, 0, 0.5, LedCount));
+    // }
 
     m_candle.modulateVBatOutput(1);
   }

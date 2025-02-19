@@ -20,15 +20,14 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AlgaeCommands;
 import frc.robot.commands.CoralCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
-import frc.robot.commands.LEDCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Coral;
@@ -57,7 +56,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final LEDs led;
 
-  private final double LED_BLINK_RATE = 0.3; // [seconds] 
+  private final double LED_BLINK_RATE = 0.3; // [seconds]
 
   // Controllers
   private final CommandXboxController driverController =
@@ -88,43 +87,29 @@ public class RobotContainer {
         elevator = new Elevator();
         led = new LEDs();
 
+        // Trigger coralIntakeTrigger = new Trigger(() -> coral.hasCoral());
+        // Trigger algaeIntakeTrigger = new Trigger(() -> algae.hasAlgae());
 
-        Trigger coralIntakeTrigger = new Trigger(() -> coral.hasCoral());
-        Trigger algaeIntakeTrigger = new Trigger(() -> algae.hasAlgae());
+        // coralIntakeTrigger.onTrue(LEDCommands.SetColor(led, "WHITE"));
 
-        coralIntakeTrigger.onTrue(Commands.sequence(
-            LEDCommands.setIsRunningCommand(led, true),
-            LEDCommands.SetColor(led, "WHITE"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "OFF"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "WHITE"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "OFF"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "WHITE"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "OFF"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.stayAtColor(led, "WHITE")
-        )).onFalse(LEDCommands.setIsRunningCommand(led, false));
-
-        algaeIntakeTrigger.onTrue(Commands.sequence(
-            LEDCommands.setIsRunningCommand(led, true),
-            LEDCommands.SetColor(led, "CYAN"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "OFF"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "CYAN"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "OFF"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "CYAN"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.SetColor(led, "OFF"),
-            new WaitCommand(LED_BLINK_RATE),
-            LEDCommands.stayAtColor(led, "CYAN")
-        )).onFalse(LEDCommands.setIsRunningCommand(led, false));
+        // algaeIntakeTrigger
+        //     .onTrue(
+        //         Commands.sequence(
+        //             LEDCommands.setIsRunningCommand(led, true),
+        //             LEDCommands.SetColor(led, "CYAN"),
+        //             new WaitCommand(LED_BLINK_RATE),
+        //             LEDCommands.SetColor(led, "OFF"),
+        //             new WaitCommand(LED_BLINK_RATE),
+        //             LEDCommands.SetColor(led, "CYAN"),
+        //             new WaitCommand(LED_BLINK_RATE),
+        //             LEDCommands.SetColor(led, "OFF"),
+        //             new WaitCommand(LED_BLINK_RATE),
+        //             LEDCommands.SetColor(led, "CYAN"),
+        //             new WaitCommand(LED_BLINK_RATE),
+        //             LEDCommands.SetColor(led, "OFF"),
+        //             new WaitCommand(LED_BLINK_RATE),
+        //             LEDCommands.stayAtColor(led, "CYAN")))
+        //     .onFalse(LEDCommands.setIsRunningCommand(led, false));
 
         break;
 
@@ -157,6 +142,7 @@ public class RobotContainer {
         algae = new Algae();
         elevator = new Elevator();
         led = new LEDs();
+
         break;
     }
 
@@ -199,6 +185,20 @@ public class RobotContainer {
             () -> -driverController.getRightX(),
             () -> driverController.getRightTriggerAxis(),
             () -> driverController.getLeftTriggerAxis()));
+
+    led.setDefaultCommand(
+        new RunCommand(
+            () -> {
+              if (coral.hasCoral()) {
+                led.setColor("WHITE");
+              } else if (algae.hasAlgae()) {
+                led.setColor("BLUE");
+              } else {
+                led.setColor("DEFAULT");
+              }
+            },
+            coral,
+            led));
 
     ////////////////////////////////////////////////////////// V-- DRIVER --V
     // ///////////////////////////////////////////////////////////////////////////

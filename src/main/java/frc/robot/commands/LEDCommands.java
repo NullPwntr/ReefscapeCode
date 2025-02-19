@@ -15,6 +15,7 @@ public class LEDCommands {
         },
         led);
   }
+
   public static Command stayAtColor(LEDs led, String color) {
     return Commands.run(
         () -> {
@@ -30,5 +31,4 @@ public class LEDCommands {
         },
         led);
   }
-
 }
