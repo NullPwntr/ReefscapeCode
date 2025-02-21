@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
   private static final double ANGLE_KP = 5.0;
@@ -193,6 +196,23 @@ public class DriveCommands {
         },
         drive);
   }
+
+
+  //   public Command driveToReefRight() {
+  //   PathConstraints constraints = new PathConstraints(
+  //       1, 1,
+  //       Units.degreesToRadians(180), Units.degreesToRadians(180));
+  //   Pose2d targetPose = new Pose2d(new Translation2d(0, 0), new Rotation2d(10));
+  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
+  // }
+
+  // public Command driveToReefLeft() {
+  //   PathConstraints constraints = new PathConstraints(
+  //       1, 1,
+  //       Units.degreesToRadians(180), Units.degreesToRadians(180));
+  //   Pose2d targetPose = new Pose2d();
+  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
+  // }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.
