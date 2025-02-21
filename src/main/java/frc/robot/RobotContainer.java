@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -39,6 +38,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -50,6 +52,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Vision vision;
 
   private final Coral coral;
   private final Algae algae;
@@ -81,6 +84,12 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOLimelight("limelight-right", drive::getRotation),
+                new VisionIOLimelight("limelight-left", drive::getRotation));
 
         coral = new Coral();
         algae = new Algae();
@@ -123,6 +132,12 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
 
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOLimelight("limelight-right", drive::getRotation),
+                new VisionIOLimelight("limelight-left", drive::getRotation));
+
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
@@ -138,6 +153,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
@@ -186,19 +202,19 @@ public class RobotContainer {
             () -> driverController.getRightTriggerAxis(),
             () -> driverController.getLeftTriggerAxis()));
 
-    led.setDefaultCommand(
-        new RunCommand(
-            () -> {
-              if (coral.hasCoral()) {
-                led.setColor("WHITE");
-              } else if (algae.hasAlgae()) {
-                led.setColor("BLUE");
-              } else {
-                led.setColor("DEFAULT");
-              }
-            },
-            coral,
-            led));
+    // led.setDefaultCommand(
+    //     new RunCommand(
+    //         () -> {
+    //           if (coral.hasCoral()) {
+    //             led.setColor("WHITE");
+    //           } else if (algae.hasAlgae()) {
+    //             led.setColor("BLUE");
+    //           } else {
+    //             led.setColor("DEFAULT");
+    //           }
+    //         },
+    //         coral,
+    //         led));
 
     ////////////////////////////////////////////////////////// V-- DRIVER --V
     // ///////////////////////////////////////////////////////////////////////////
@@ -271,7 +287,7 @@ public class RobotContainer {
             Commands.sequence(
                 AlgaeCommands.SetIsRunningCommand(algae, true),
                 AlgaeCommands.Intake(algae),
-                AlgaeCommands.setSecondarySetpoint(algae, 60)))
+                AlgaeCommands.setSecondarySetpoint(algae, 65)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),

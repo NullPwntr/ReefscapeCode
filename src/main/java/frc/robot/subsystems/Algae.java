@@ -32,7 +32,7 @@ public class Algae extends SubsystemBase {
 
   public PIDController primaryPID = new PIDController(0.005, 0, 0);
   public PIDController secondaryPID =
-      new PIDController(0.002, 0, 0.0000143); // wtf (near perfect gains)
+      new PIDController(0.005, 0, 0.0000143); // wtf (near perfect gains)
 
   XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
   XboxController debugController = new XboxController(RobotConstants.Controllers.DebugPortId);
