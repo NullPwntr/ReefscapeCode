@@ -199,46 +199,44 @@ public class DriveCommands {
                   maximumSpeed); // Make [SpeedMultiplier = minimumSpeed] when both triggers are
           // held down (0.7 - 0.4 + 0.3 => 0 ---clamp---> 0.3)
 
-          // Disable speed modifications in autonomous
+          // Disable speed modifications during autonomous
           speedMultiplier = DriverStation.isAutonomousEnabled() ? 1 : speedMultiplier;
 
           // Calculate the maximum linear/angular speed based on our multiplier
           double maxLinearSpeed = drive.getMaxLinearSpeedMetersPerSec() * speedMultiplier;
           double maxAngularSpeed = drive.getMaxAngularSpeedRadPerSec() * speedMultiplier;
 
-          // Convert to field-relative speeds & send the command
           ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  linearVelocity.getX() * maxLinearSpeed,
-                  linearVelocity.getY() * maxLinearSpeed + output, // robot x is this y
-                  omega * maxAngularSpeed);
-
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+          new ChassisSpeeds(
+              linearVelocity.getX() * maxLinearSpeed,
+              linearVelocity.getY() * maxLinearSpeed,
+              omega * maxAngularSpeed);
+      
+      boolean isFlipped =
+          DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().get() == Alliance.Red;
+      
+      // Convert to robot-relative speeds
+      ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          speeds,
+          isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()
+      );
+      
+      // ADD THE OUTPUT AS ROBOT-RELATIVE MOVEMENT (APRILTAGS ARE SOMETIMES ANGLED)
+      robotRelativeSpeeds.vyMetersPerSecond += output;
+      
+      drive.runVelocity(robotRelativeSpeeds);
         },
         drive);
   }
 
-  public static Command driveToReefRight() {
-    PathConstraints constraints =
-        new PathConstraints(1, 1, Units.degreesToRadians(180), Units.degreesToRadians(180));
-    Pose2d targetPose = new Pose2d(new Translation2d(14.35, 4.15), new Rotation2d(179));
-    return AutoBuilder.pathfindToPose(targetPose, constraints);
-  }
-
-  public Command driveToReefLeft() {
-    PathConstraints constraints =
-        new PathConstraints(1, 1, Units.degreesToRadians(180), Units.degreesToRadians(180));
-    Pose2d targetPose = new Pose2d();
-    return AutoBuilder.pathfindToPose(targetPose, constraints);
-  }
+  // This pathfinding works but no need to be used
+  // public static Command driveToReefRight() {
+  //   PathConstraints constraints =
+  //       new PathConstraints(1, 1, Units.degreesToRadians(180), Units.degreesToRadians(180));
+  //   Pose2d targetPose = new Pose2d(new Translation2d(14.35, 4.15), new Rotation2d(179));
+  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
+  // }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.
