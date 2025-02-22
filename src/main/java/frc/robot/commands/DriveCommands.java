@@ -13,7 +13,10 @@
 
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,17 +31,16 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.LimelightHelpers;
 import frc.robot.RobotConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -122,15 +124,42 @@ public class DriveCommands {
   //       },
   //       drive);
   // }
+
+  static PIDController reefAimPID = new PIDController(0.02, 0, 0);
+
   public static Command joystickDrive(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
       DoubleSupplier rightTriggerSupplier,
-      DoubleSupplier leftTriggerSupplier) {
+      DoubleSupplier leftTriggerSupplier,
+      BooleanSupplier rightBumperSupplier,
+      BooleanSupplier leftBumperSupplier) {
     return Commands.run(
         () -> {
+          double rightTx = LimelightHelpers.getTX("limelight-right");
+          double leftTx = LimelightHelpers.getTX("limelight-left");
+
+          double output = 0;
+          if (rightBumperSupplier.getAsBoolean()) {
+            if (LimelightHelpers.getTV("limelight-left")) {
+              output = reefAimPID.calculate(leftTx);
+            } else {
+              output = 0.0;
+            }
+
+            reefAimPID.setSetpoint(10);
+          } else if (leftBumperSupplier.getAsBoolean()) {
+            if (LimelightHelpers.getTV("limelight-left")) {
+              output = reefAimPID.calculate(rightTx);
+            } else {
+              output = 0.0;
+            }
+
+            reefAimPID.setSetpoint(-10);
+          }
+
           // Get linear velocity from the joysticks
           Translation2d linearVelocity =
               getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -181,7 +210,7 @@ public class DriveCommands {
           ChassisSpeeds speeds =
               new ChassisSpeeds(
                   linearVelocity.getX() * maxLinearSpeed,
-                  linearVelocity.getY() * maxLinearSpeed,
+                  linearVelocity.getY() * maxLinearSpeed + output, // robot x is this y
                   omega * maxAngularSpeed);
 
           boolean isFlipped =
@@ -197,22 +226,19 @@ public class DriveCommands {
         drive);
   }
 
+  public static Command driveToReefRight() {
+    PathConstraints constraints =
+        new PathConstraints(1, 1, Units.degreesToRadians(180), Units.degreesToRadians(180));
+    Pose2d targetPose = new Pose2d(new Translation2d(14.35, 4.15), new Rotation2d(179));
+    return AutoBuilder.pathfindToPose(targetPose, constraints);
+  }
 
-  //   public Command driveToReefRight() {
-  //   PathConstraints constraints = new PathConstraints(
-  //       1, 1,
-  //       Units.degreesToRadians(180), Units.degreesToRadians(180));
-  //   Pose2d targetPose = new Pose2d(new Translation2d(0, 0), new Rotation2d(10));
-  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
-  // }
-
-  // public Command driveToReefLeft() {
-  //   PathConstraints constraints = new PathConstraints(
-  //       1, 1,
-  //       Units.degreesToRadians(180), Units.degreesToRadians(180));
-  //   Pose2d targetPose = new Pose2d();
-  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
-  // }
+  public Command driveToReefLeft() {
+    PathConstraints constraints =
+        new PathConstraints(1, 1, Units.degreesToRadians(180), Units.degreesToRadians(180));
+    Pose2d targetPose = new Pose2d();
+    return AutoBuilder.pathfindToPose(targetPose, constraints);
+  }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.

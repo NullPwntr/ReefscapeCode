@@ -39,9 +39,12 @@ public class RobotConstants {
       public static final double ReturnMaxSpeed = -0.3;
 
       public class PIDFF {
-        public static final double kP = 0.08;
+        // public static final double kP = 0.08;
+        // public static final double kI = 0;
+        // public static final double kD = 0.003;
+        public static final double kP = 0.035;
         public static final double kI = 0;
-        public static final double kD = 0.003;
+        public static final double kD = 0.002;
 
         public static final double kS = 0;
         public static final double kG = 0;
@@ -51,14 +54,14 @@ public class RobotConstants {
     }
 
     public class Setpoints { // Change to gyro angles (These are motor positions)
-      public static final double NormalScoring = 25.0;
-      public static final double MiddleScoring = 24.5;
+      public static final double NormalScoring = 25.0 * 4;
+      public static final double MiddleScoring = 24.5 * 4;
       public static final double TopScoring = 0.0; // Not tested yet
 
-      public static final double HumanIntake = 4.6;
+      public static final double HumanIntake = 4.6 * 4;
       public static final double Home = 0.0;
 
-      public static final double Center = 26.2 / 2.0; // (Top of the elevator)
+      public static final double Center = 26.2 * 4.0 / 2.0; // (Top of the elevator)
     }
 
     public class Config {

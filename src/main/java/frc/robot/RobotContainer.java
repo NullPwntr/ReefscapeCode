@@ -200,7 +200,9 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
             () -> driverController.getRightTriggerAxis(),
-            () -> driverController.getLeftTriggerAxis()));
+            () -> driverController.getLeftTriggerAxis(),
+            driverController.rightBumper(),
+            driverController.leftBumper()));
 
     // led.setDefaultCommand(
     //     new RunCommand(
@@ -433,6 +435,8 @@ public class RobotContainer {
                 AlgaeCommands.setPrimarySetpoint(algae, 0),
                 AlgaeCommands.setSecondarySetpoint(algae, 0),
                 AlgaeCommands.SetIsRunningCommand(algae, false)));
+
+    // debugController.y().onTrue(DriveCommands.driveToReefRight());
 
     // .onFalse(
     //     Commands.runOnce(

@@ -12,6 +12,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotConstants;
@@ -76,6 +77,12 @@ public class Coral extends SubsystemBase {
     coralAngleMotor.getConfigurator().setPosition(0.0);
 
     pid.setSetpoint(0);
+
+    SmartDashboard.putNumber("CORALKP", 0);
+    SmartDashboard.putNumber("CORALKI", 0);
+    SmartDashboard.putNumber("CORALKD", 0);
+
+    pid.setTolerance(0.2);
   }
 
   @AutoLogOutput(key = "Coral/Sensor/Distance")
@@ -106,9 +113,19 @@ public class Coral extends SubsystemBase {
     isRunningCommand = flag;
   }
 
+  @AutoLogOutput(key = "Coral/CurrentAnglePosition")
+  public double getCoralPosition() {
+    return coralAngleMotor.getPosition().getValueAsDouble() * 4.0;
+  }
+
   @Override
   public void periodic() {
-    output = pid.calculate(coralAngleMotor.getPosition().getValueAsDouble());
+    // pid.setPID(
+    //     SmartDashboard.getNumber("CORALKP", 0),
+    //     SmartDashboard.getNumber("CORALKI", 0),
+    //     SmartDashboard.getNumber("CORALKD", 0));
+
+    output = pid.calculate(getCoralPosition());
 
     // if (operatorController.getAButton()) {
     //   setpoint = RobotConstants.CoralSubsystem.Setpoints.NormalScoring;
