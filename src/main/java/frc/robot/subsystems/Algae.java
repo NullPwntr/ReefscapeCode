@@ -32,7 +32,7 @@ public class Algae extends SubsystemBase {
 
   public PIDController primaryPID = new PIDController(0.005, 0, 0);
   public PIDController secondaryPID =
-      new PIDController(0.005, 0, 0.0000143); // wtf (near perfect gains)
+      new PIDController(0.0033, 0, 0.000014); // wtf (near perfect gains)
 
   XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
   XboxController debugController = new XboxController(RobotConstants.Controllers.DebugPortId);
@@ -41,6 +41,7 @@ public class Algae extends SubsystemBase {
   boolean isRunningCommand = false;
 
   boolean LBHeld = false;
+  boolean isNetScoring = false;
 
   public Algae() {
     SmartDashboard.putNumber("AlgaeSpeed", 0.3);
@@ -107,7 +108,7 @@ public class Algae extends SubsystemBase {
 
   @AutoLogOutput(key = "Algae/Secondary Arm/Position")
   public double getSecondaryArmPosition() {
-    return (secondaryArmCANCoder.getPosition().getValueAsDouble()) * 100; // offset
+    return (secondaryArmCANCoder.getPosition().getValueAsDouble() - 0.089111) * 100; // offset
   }
 
   public void setIsRunningCommand(boolean flag) {
@@ -116,6 +117,14 @@ public class Algae extends SubsystemBase {
 
   public void setIsLBHeld(boolean flag) {
     LBHeld = flag;
+  }
+
+  public void setIsNetScoring(boolean flag) {
+    isNetScoring = flag;
+  }
+
+  public boolean isNetScoring() {
+    return isNetScoring;
   }
 
   @Override
@@ -134,15 +143,20 @@ public class Algae extends SubsystemBase {
     //   primaryPID.setSetpoint(0);
     // }
 
-    // secondaryPID.setP(SmartDashboard.getNumber("tttkp", 0));
-    // secondaryPID.setI(SmartDashboard.getNumber("tttki", 0));
-    // secondaryPID.setD(SmartDashboard.getNumber("tttkd", 0));
     // // secondaryPID.setP(SmartDashboard.getNumber("ttt", 0.005));
 
     // secondaryPID.setIZone(SmartDashboard.getNumber("tttizone", 0.0));
     // secondaryPID.setSetpoint(SmartDashboard.getNumber("tttsetpoint", 35.0));
 
-    if (hasAlgae() && LBHeld == false) {
+    if (hasAlgae()) {
+      LEDs.currentColor = "CYAN";
+    } else {
+      if (LEDs.currentColor != "WHITE") { // idk how this works but it does
+        LEDs.currentColor = "DEFAULT";
+      }
+    }
+
+    if (hasAlgae() && LBHeld == false && isNetScoring == false) {
       isRunningCommand = false;
     }
 
@@ -176,8 +190,8 @@ public class Algae extends SubsystemBase {
     SmartDashboard.putNumber("AMPARM", SecondaryArm.getSupplyCurrent().getValueAsDouble());
     // Logger.recordOutput("Algae/Primary Arm/Position",
     // PrimaryArm.getPosition().getValueAsDouble());
-    Logger.recordOutput(
-        "Algae/Secondary Arm/Position", SecondaryArm.getPosition().getValueAsDouble());
+    // Logger.recordOutput(
+    //     "Algae/Secondary Arm/Position", SecondaryArm.getPosition().getValueAsDouble());
     Logger.recordOutput("Algae/Motion/PrimarySetpoint", primaryPID.getSetpoint());
     Logger.recordOutput("Algae/Motion/SecondarySetpoint", secondaryPID.getSetpoint());
     Logger.recordOutput(

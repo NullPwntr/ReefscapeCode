@@ -20,6 +20,17 @@ public class AlgaeCommands {
         algae);
   }
 
+  public static Command IntakeCustomSpeed(Algae algae, double speed) {
+    return Commands.runOnce(
+        () -> {
+          // Only intake when the robot doesn't have an algae.
+          if (algae.hasAlgae() == false) {
+            algae.algaeIntake.set(speed);
+          }
+        },
+        algae);
+  }
+
   public static Command Outtake(Algae algae) {
     return Commands.runOnce(
         () -> {
@@ -62,6 +73,13 @@ public class AlgaeCommands {
     return Commands.runOnce(
         () -> {
           algae.setIsLBHeld(flag);
+        },
+        algae);
+  }
+  public static Command SetIsNetScoring(Algae algae, boolean flag) {
+    return Commands.runOnce(
+        () -> {
+          algae.setIsNetScoring(flag);
         },
         algae);
   }

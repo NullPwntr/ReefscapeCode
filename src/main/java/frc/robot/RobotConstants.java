@@ -54,11 +54,11 @@ public class RobotConstants {
     }
 
     public class Setpoints { // Change to gyro angles (These are motor positions)
-      public static final double NormalScoring = 25.0 * 4;
-      public static final double MiddleScoring = 24.5 * 4;
+      public static final double NormalScoring = 25.0 * 4 + 0.5;
+      public static final double MiddleScoring = 24.5 * 4 + 0.5;
       public static final double TopScoring = 0.0; // Not tested yet
 
-      public static final double HumanIntake = 4.6 * 4;
+      public static final double HumanIntake = 18.9;
       public static final double Home = 0.0;
 
       public static final double Center = 26.2 * 4.0 / 2.0; // (Top of the elevator)
@@ -89,7 +89,7 @@ public class RobotConstants {
     public static final int CANRangeId = 50; // Distance sensor
     public static final double hasAlgaeThreshold = 0.1; // The value where the sensor sees an algae
 
-    public static final double IntakeSpeed = 0.3; // Default Intake Speed
+    public static final double IntakeSpeed = 0.5; // Default Intake Speed
     public static final double IntakeHoldbackSpeed =
         0.08; // Intake speed when holding an algae (This is to hold the algae in place).
 
@@ -164,7 +164,7 @@ public class RobotConstants {
       public static final double L1 = -1.0; // -1.0 is basically 0
       public static final double L2 = 21.0; // 22.5
       public static final double L3 = 58.5; // not tested yet
-      public static final double TopAlgae = 45.0; // not tested yet
+      public static final double TopAlgae = 40.0; // not tested yet
 
       public static final double AlgaeScoringHeight = 0.0; // not tested yet (probably MaxHeight)
       public static final double ProcessorScoringHeight =

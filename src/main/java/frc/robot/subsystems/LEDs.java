@@ -19,7 +19,7 @@ public class LEDs extends SubsystemBase {
   public String robotState = "";
 
   @AutoLogOutput(key = "LEDs/Current Color")
-  public String currentColor = "DEFAULT";
+  public static String currentColor = "DEFAULT";
 
   private boolean robotEnabled = false;
   private boolean isRunningCommand = false;
@@ -139,6 +139,14 @@ public class LEDs extends SubsystemBase {
 
     if (bootUpAnimationComplete == false) {
       bootUpAnimation();
+    }
+
+    if (currentColor == "DEFAULT") {
+      m_candle.setLEDs(255, 15, 0);
+    } else if (currentColor == "WHITE") {
+      m_candle.setLEDs(255, 255, 255, 255, 0, LedCount);
+    } else if (currentColor == "CYAN") {
+      m_candle.setLEDs(0, 40, 255);
     }
 
     // if (isRunningCommand == false && bootUpAnimationComplete && robotEnabled) {

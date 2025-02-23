@@ -140,10 +140,12 @@ public class Coral extends SubsystemBase {
     // }
 
     if (hasCoral()) {
+      LEDs.currentColor = "WHITE";
       if (isRunningCommand == false) {
         setpoint = RobotConstants.CoralSubsystem.Setpoints.HumanIntake;
       }
     } else {
+      LEDs.currentColor = "DEFAULT";
       if (isRunningCommand == false) {
         setpoint = RobotConstants.CoralSubsystem.Setpoints.HumanIntake;
       }

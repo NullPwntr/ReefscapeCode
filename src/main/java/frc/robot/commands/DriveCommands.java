@@ -13,8 +13,6 @@
 
 package frc.robot.commands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -125,7 +123,7 @@ public class DriveCommands {
   //       drive);
   // }
 
-  static PIDController reefAimPID = new PIDController(0.02, 0, 0);
+  static PIDController reefAimPID = new PIDController(0.023, 0, 0);
 
   public static Command joystickDrive(
       Drive drive,
@@ -149,15 +147,15 @@ public class DriveCommands {
               output = 0.0;
             }
 
-            reefAimPID.setSetpoint(10);
+            reefAimPID.setSetpoint(21.5);
           } else if (leftBumperSupplier.getAsBoolean()) {
-            if (LimelightHelpers.getTV("limelight-left")) {
+            if (LimelightHelpers.getTV("limelight-right")) {
               output = reefAimPID.calculate(rightTx);
             } else {
               output = 0.0;
             }
 
-            reefAimPID.setSetpoint(-10);
+            reefAimPID.setSetpoint(-12.3);
           }
 
           // Get linear velocity from the joysticks
@@ -207,25 +205,44 @@ public class DriveCommands {
           double maxAngularSpeed = drive.getMaxAngularSpeedRadPerSec() * speedMultiplier;
 
           ChassisSpeeds speeds =
-          new ChassisSpeeds(
-              linearVelocity.getX() * maxLinearSpeed,
-              linearVelocity.getY() * maxLinearSpeed,
-              omega * maxAngularSpeed);
-      
-      boolean isFlipped =
-          DriverStation.getAlliance().isPresent()
-              && DriverStation.getAlliance().get() == Alliance.Red;
-      
-      // Convert to robot-relative speeds
-      ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          speeds,
-          isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()
-      );
-      
-      // ADD THE OUTPUT AS ROBOT-RELATIVE MOVEMENT (APRILTAGS ARE SOMETIMES ANGLED)
-      robotRelativeSpeeds.vyMetersPerSecond += output;
-      
-      drive.runVelocity(robotRelativeSpeeds);
+              new ChassisSpeeds(
+                  linearVelocity.getX() * maxLinearSpeed,
+                  linearVelocity.getY() * maxLinearSpeed,
+                  omega * maxAngularSpeed);
+
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
+
+          // Convert to robot-relative speeds
+          ChassisSpeeds robotRelativeSpeeds =
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  speeds,
+                  isFlipped
+                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                      : drive.getRotation());
+
+          // ADD THE OUTPUT AS ROBOT-RELATIVE MOVEMENT (APRILTAGS ARE SOMETIMES ANGLED)
+          robotRelativeSpeeds.vyMetersPerSecond += output;
+
+          drive.runVelocity(robotRelativeSpeeds);
+        },
+        drive);
+  }
+
+  public static Command driveBackwards(Drive drive) {
+    return Commands.run(
+        () -> {
+          // Define the fraction of max speed to drive backwards.
+          double speedFraction = 0.02; // 50% of max linear speed (adjust as needed)
+          double backwardSpeed = drive.getMaxLinearSpeedMetersPerSec() * speedFraction;
+
+          // In WPILib's convention, a negative vx directly corresponds to reverse motion.
+          // Here, we use robot-relative speeds without any field-relative conversion.
+          ChassisSpeeds robotRelativeSpeeds = new ChassisSpeeds(-backwardSpeed, 0, 0);
+
+          // Command the drive subsystem to run at these robot-relative speeds.
+          drive.runVelocity(robotRelativeSpeeds);
         },
         drive);
   }
