@@ -119,12 +119,14 @@ public class RobotContainer {
         break;
     }
 
-
     NamedCommands.registerCommand(
         "Move Backwards L4", DriveCommands.driveBackwards(drive).withTimeout(0.3));
     NamedCommands.registerCommand(
         "Elevator Set L4",
         ElevatorCommands.SetSetpoint(elevator, RobotConstants.ElevatorSubsystem.Setpoints.L3));
+    NamedCommands.registerCommand(
+        "Elevator Set L3",
+        ElevatorCommands.SetSetpoint(elevator, RobotConstants.ElevatorSubsystem.Setpoints.L2));
     NamedCommands.registerCommand(
         "Elevator Set Home",
         ElevatorCommands.SetSetpoint(
@@ -133,6 +135,10 @@ public class RobotContainer {
         "Coral Set L4",
         Commands.runOnce(
             () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.TopScoring), coral));
+    NamedCommands.registerCommand(
+        "Coral Set L3",
+        Commands.runOnce(
+            () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.MiddleScoring), coral));
     NamedCommands.registerCommand(
         "Coral Set L1",
         Commands.runOnce(

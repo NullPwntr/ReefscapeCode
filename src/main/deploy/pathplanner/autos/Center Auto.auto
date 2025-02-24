@@ -19,7 +19,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Coral Set L1"
+            "name": "Coral Set L3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Set L3"
           }
         },
         {
@@ -43,13 +49,19 @@
         {
           "type": "named",
           "data": {
+            "name": "Coral Stop Motor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Coral Set Home"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Coral Stop Motor"
+            "name": "Elevator Set Home"
           }
         },
         {
