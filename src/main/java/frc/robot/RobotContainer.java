@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -54,8 +55,6 @@ public class RobotContainer {
   private final Elevator elevator;
   private final LEDs led;
 
-  private final double LED_BLINK_RATE = 0.3; // [seconds]
-
   // Controllers
   private final CommandXboxController driverController =
       new CommandXboxController(RobotConstants.Controllers.DriverPortId);
@@ -84,30 +83,6 @@ public class RobotContainer {
         algae = new Algae();
         elevator = new Elevator();
         led = new LEDs();
-
-        // Trigger coralIntakeTrigger = new Trigger(() -> coral.hasCoral());
-        // Trigger algaeIntakeTrigger = new Trigger(() -> algae.hasAlgae());
-
-        // coralIntakeTrigger.onTrue(LEDCommands.SetColor(led, "WHITE"));
-
-        // algaeIntakeTrigger
-        //     .onTrue(
-        //         Commands.sequence(
-        //             LEDCommands.setIsRunningCommand(led, true),
-        //             LEDCommands.SetColor(led, "CYAN"),
-        //             new WaitCommand(LED_BLINK_RATE),
-        //             LEDCommands.SetColor(led, "OFF"),
-        //             new WaitCommand(LED_BLINK_RATE),
-        //             LEDCommands.SetColor(led, "CYAN"),
-        //             new WaitCommand(LED_BLINK_RATE),
-        //             LEDCommands.SetColor(led, "OFF"),
-        //             new WaitCommand(LED_BLINK_RATE),
-        //             LEDCommands.SetColor(led, "CYAN"),
-        //             new WaitCommand(LED_BLINK_RATE),
-        //             LEDCommands.SetColor(led, "OFF"),
-        //             new WaitCommand(LED_BLINK_RATE),
-        //             LEDCommands.stayAtColor(led, "CYAN")))
-        //     .onFalse(LEDCommands.setIsRunningCommand(led, false));
 
         break;
 
@@ -143,6 +118,36 @@ public class RobotContainer {
 
         break;
     }
+
+
+    NamedCommands.registerCommand(
+        "Move Backwards L4", DriveCommands.driveBackwards(drive).withTimeout(0.3));
+    NamedCommands.registerCommand(
+        "Elevator Set L4",
+        ElevatorCommands.SetSetpoint(elevator, RobotConstants.ElevatorSubsystem.Setpoints.L3));
+    NamedCommands.registerCommand(
+        "Elevator Set Home",
+        ElevatorCommands.SetSetpoint(
+            elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight));
+    NamedCommands.registerCommand(
+        "Coral Set L4",
+        Commands.runOnce(
+            () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.TopScoring), coral));
+    NamedCommands.registerCommand(
+        "Coral Set L1",
+        Commands.runOnce(
+            () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.NormalScoring), coral));
+    NamedCommands.registerCommand(
+        "Coral Set Home",
+        Commands.runOnce(
+            () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home), coral));
+    NamedCommands.registerCommand(
+        "Coral Start Outtake", CoralCommands.OuttakeSlow(coral).withTimeout(1));
+    NamedCommands.registerCommand("Coral Stop Motor", CoralCommands.stopMotor(coral));
+    NamedCommands.registerCommand(
+        "Coral Start Commands", CoralCommands.SetIsRunningCommand(coral, true));
+    NamedCommands.registerCommand(
+        "Coral Stop Commands", CoralCommands.SetIsRunningCommand(coral, false));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -186,20 +191,6 @@ public class RobotContainer {
             driverController.rightBumper(),
             driverController.leftBumper()));
 
-    // led.setDefaultCommand(
-    //     new RunCommand(
-    //         () -> {
-    //           if (coral.hasCoral()) {
-    //             led.setColor("WHITE");
-    //           } else if (algae.hasAlgae()) {
-    //             led.setColor("BLUE");
-    //           } else {
-    //             led.setColor("DEFAULT");
-    //           }
-    //         },
-    //         coral,
-    //         led));
-
     ////////////////////////////////////////////////////////// V-- DRIVER --V
     // ///////////////////////////////////////////////////////////////////////////
 
@@ -238,8 +229,8 @@ public class RobotContainer {
                 AlgaeCommands.SetIsRunningCommand(algae, true),
                 AlgaeCommands.Intake(algae),
                 ElevatorCommands.SetSetpoint(
-                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.L2),
-                AlgaeCommands.setSecondarySetpoint(algae, 40)))
+                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.BottomAlgae),
+                AlgaeCommands.setSecondarySetpoint(algae, 30)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
@@ -256,7 +247,7 @@ public class RobotContainer {
                 AlgaeCommands.Intake(algae),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.TopAlgae),
-                AlgaeCommands.setSecondarySetpoint(algae, 40)))
+                AlgaeCommands.setSecondarySetpoint(algae, 30)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
@@ -270,11 +261,13 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 AlgaeCommands.SetIsRunningCommand(algae, true),
+                ElevatorCommands.SetSetpoint(elevator, 5),
                 AlgaeCommands.Intake(algae),
                 AlgaeCommands.setSecondarySetpoint(algae, 60)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
+                ElevatorCommands.SetSetpoint(elevator, 0),
                 AlgaeCommands.setSecondarySetpoint(algae, 0),
                 AlgaeCommands.SetIsRunningCommand(algae, false)));
 
@@ -304,29 +297,6 @@ public class RobotContainer {
                 AlgaeCommands.SetIsLBHeld(algae, false),
                 AlgaeCommands.setSecondarySetpoint(algae, 0),
                 AlgaeCommands.stopMotor(algae)));
-
-    // operatorController
-    //     .leftTrigger(0.85)
-    //     .onTrue(
-    //         Commands.sequence(
-    //             AlgaeCommands.SetIsRunningCommand(algae, true),
-    //             AlgaeCommands.SetIsNetScoring(algae, true),
-    //             AlgaeCommands.setSecondarySetpoint(algae, 50),
-    //             new WaitCommand(0.25),
-    //             AlgaeCommands.setPrimarySetpoint(algae, 115),
-    //             AlgaeCommands.setSecondarySetpoint(algae, 50),
-    //             new WaitCommand(0.25),
-    //             ElevatorCommands.SetSetpoint(elevator, 77)))
-    //     .onFalse(
-    //         Commands.sequence(
-    //             ElevatorCommands.SetSetpoint(elevator, 0),
-    //             new WaitCommand(2),
-    //             AlgaeCommands.setSecondarySetpoint(algae, 125),
-    //             new WaitCommand(0.5),
-    //             AlgaeCommands.setPrimarySetpoint(algae, 0),
-    //             AlgaeCommands.setSecondarySetpoint(algae, 0),
-    //             AlgaeCommands.SetIsRunningCommand(algae, false),
-    //             AlgaeCommands.SetIsNetScoring(algae, false)));
 
     operatorController
         .pov(270)
@@ -393,23 +363,22 @@ public class RobotContainer {
                 ));
 
     // dont ask
-    operatorController.pov(0).onTrue(DriveCommands.driveBackwards(drive).withTimeout(0.5));
+    operatorController.pov(0).onTrue(DriveCommands.driveBackwards(drive).withTimeout(0.3));
     operatorController
         .pov(0)
         .onTrue(
             Commands.sequence(
-                AlgaeCommands.IntakeCustomSpeed(algae, 0.2),
+                new WaitCommand(0.25),
                 Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.L3),
-                new WaitCommand(1),
+                // new WaitCommand(1),
                 Commands.runOnce(
-                    () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.NormalScoring),
+                    () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.TopScoring),
                     coral) // First action
                 ))
         .onFalse(
             Commands.sequence(
-                AlgaeCommands.IntakeCustomSpeed(algae, 0),
                 // Commands.waitSeconds(0.3), // Wait for 2 seconds
                 // CoralCommands.OuttakeSlow(coral).withTimeout(1),
                 Commands.runOnce(
@@ -422,32 +391,32 @@ public class RobotContainer {
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
                 ));
 
-    debugController
-        .a()
-        .onTrue(ElevatorCommands.SetSetpoint(elevator, 77))
-        .onFalse(ElevatorCommands.SetSetpoint(elevator, 0));
-    debugController
-        .b()
-        .onTrue(
-            Commands.sequence(
-                AlgaeCommands.SetIsRunningCommand(algae, true),
-                AlgaeCommands.SetIsNetScoring(algae, true),
-                AlgaeCommands.setSecondarySetpoint(algae, 50),
-                new WaitCommand(0.25),
-                AlgaeCommands.setPrimarySetpoint(algae, 115),
-                AlgaeCommands.setSecondarySetpoint(algae, 50),
-                new WaitCommand(0.25),
-                ElevatorCommands.SetSetpoint(elevator, 77)))
-        .onFalse(
-            Commands.sequence(
-                ElevatorCommands.SetSetpoint(elevator, 0),
-                new WaitCommand(2),
-                AlgaeCommands.setSecondarySetpoint(algae, 125),
-                new WaitCommand(1),
-                AlgaeCommands.setPrimarySetpoint(algae, 0),
-                AlgaeCommands.setSecondarySetpoint(algae, 0),
-                AlgaeCommands.SetIsRunningCommand(algae, false),
-                AlgaeCommands.SetIsNetScoring(algae, false)));
+    // debugController
+    //     .a()
+    //     .onTrue(ElevatorCommands.SetSetpoint(elevator, 77))
+    //     .onFalse(ElevatorCommands.SetSetpoint(elevator, 0));
+    // debugController
+    //     .b()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             AlgaeCommands.SetIsRunningCommand(algae, true),
+    //             AlgaeCommands.SetIsNetScoring(algae, true),
+    //             AlgaeCommands.setSecondarySetpoint(algae, 50),
+    //             new WaitCommand(0.25),
+    //             AlgaeCommands.setPrimarySetpoint(algae, 115),
+    //             AlgaeCommands.setSecondarySetpoint(algae, 50),
+    //             new WaitCommand(0.25),
+    //             ElevatorCommands.SetSetpoint(elevator, 77)))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             ElevatorCommands.SetSetpoint(elevator, 0),
+    //             new WaitCommand(2),
+    //             AlgaeCommands.setSecondarySetpoint(algae, 125),
+    //             new WaitCommand(1),
+    //             AlgaeCommands.setPrimarySetpoint(algae, 0),
+    //             AlgaeCommands.setSecondarySetpoint(algae, 0),
+    //             AlgaeCommands.SetIsRunningCommand(algae, false),
+    //             AlgaeCommands.SetIsNetScoring(algae, false)));
 
     // debugController.y().onTrue(DriveCommands.driveToReefRight());
 

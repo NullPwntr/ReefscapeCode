@@ -120,24 +120,7 @@ public class Coral extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // pid.setPID(
-    //     SmartDashboard.getNumber("CORALKP", 0),
-    //     SmartDashboard.getNumber("CORALKI", 0),
-    //     SmartDashboard.getNumber("CORALKD", 0));
-
     output = pid.calculate(getCoralPosition());
-
-    // if (operatorController.getAButton()) {
-    //   setpoint = RobotConstants.CoralSubsystem.Setpoints.NormalScoring;
-    // } else {
-    //   setpoint = RobotConstants.CoralSubsystem.Setpoints.Center;
-    // }
-
-    // if(operatorController.getLeftBumperButton()){
-    //   coralIntake.set(-0.3);
-    // }else{
-    //   coralIntake.set(0);
-    // }
 
     if (hasCoral()) {
       LEDs.currentColor = "WHITE";

@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Commands"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Set L1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Outtake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Set Home"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Stop Motor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Stop Commands"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

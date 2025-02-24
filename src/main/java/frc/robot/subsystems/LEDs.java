@@ -149,14 +149,9 @@ public class LEDs extends SubsystemBase {
       m_candle.setLEDs(0, 40, 255);
     }
 
-    // if (isRunningCommand == false && bootUpAnimationComplete && robotEnabled) {
     if (isRunningCommand == false && robotEnabled) {
       setColor(currentColor);
     }
-
-    // if (robotEnabled == false && bootUpAnimationComplete) {
-    //   m_candle.animate(new SingleFadeAnimation(255, 30, 0, 0, 0.5, LedCount));
-    // }
 
     m_candle.modulateVBatOutput(1);
   }

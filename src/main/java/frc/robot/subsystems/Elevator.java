@@ -96,15 +96,6 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    // if (operatorController.getRightBumperButton()) {
-    //   elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MaxHeight;
-    // } else if (operatorController.getLeftBumperButton()) {
-    //   elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.L2;
-    // } else {
-    //   elevatorSetpoint = RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight;
-    // }
-
     pid.setSetpoint(elevatorSetpoint);
     pidOutput = pid.calculate(TopMotor.getPosition().getValueAsDouble());
     ffOutput = feedforward.calculate(TopMotor.getVelocity().getValueAsDouble());

@@ -47,13 +47,6 @@ public class AlgaeCommands {
         algae);
   }
 
-  public static Command setPrimarySetpoint(Algae algae, double setpoint) {
-    return Commands.runOnce(
-        () -> {
-          algae.setPrimaryArmSetpoint(setpoint);
-        });
-  }
-
   public static Command setSecondarySetpoint(Algae algae, double setpoint) {
     return Commands.runOnce(
         () -> {
@@ -76,6 +69,7 @@ public class AlgaeCommands {
         },
         algae);
   }
+
   public static Command SetIsNetScoring(Algae algae, boolean flag) {
     return Commands.runOnce(
         () -> {
