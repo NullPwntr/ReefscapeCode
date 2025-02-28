@@ -58,7 +58,7 @@ public class RobotConstants {
       public static final double MiddleScoring = 24.5 * 4 + 1.3;
       public static final double TopScoring = 109.44; // Not tested yet
 
-      public static final double HumanIntake = 18.9;
+      public static final double HumanIntake = 18.9 + 0.3;
       public static final double Home = 0.0;
 
       public static final double Center = 26.2 * 4.0 / 2.0; // (Top of the elevator)

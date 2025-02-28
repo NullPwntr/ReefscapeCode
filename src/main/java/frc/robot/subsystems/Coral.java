@@ -78,10 +78,6 @@ public class Coral extends SubsystemBase {
 
     pid.setSetpoint(0);
 
-    SmartDashboard.putNumber("CORALKP", 0);
-    SmartDashboard.putNumber("CORALKI", 0);
-    SmartDashboard.putNumber("CORALKD", 0);
-
     pid.setTolerance(0.2);
   }
 
