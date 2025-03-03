@@ -1,5 +1,9 @@
 package frc.robot;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -24,7 +28,6 @@ public class RobotConstants {
 
   public class CoralSubsystem {
     public static final int IntakeMotorId = 30;
-    public static final int GyroId = 0;
 
     public static final int CANRangeId = 51; // Distance sensor
     public static final double hasCoralThreshold = 0.1; // The value where the sensor sees a coral
@@ -39,9 +42,6 @@ public class RobotConstants {
       public static final double ReturnMaxSpeed = -0.3;
 
       public class PIDFF {
-        // public static final double kP = 0.08;
-        // public static final double kI = 0;
-        // public static final double kD = 0.003;
         public static final double kP = 0.035;
         public static final double kI = 0;
         public static final double kD = 0.002;
@@ -53,10 +53,10 @@ public class RobotConstants {
       }
     }
 
-    public class Setpoints { // Change to gyro angles (These are motor positions)
+    public class Setpoints { // Change to CANCoder angles (These are motor positions)
       public static final double NormalScoring = 25.0 * 4 + 0.5;
       public static final double MiddleScoring = 24.5 * 4 + 1.3;
-      public static final double TopScoring = 109.44; // Not tested yet
+      public static final double TopScoring = 109.44;
 
       public static final double HumanIntake = 18.9 + 0.3;
       public static final double Home = 0.0;
@@ -65,13 +65,20 @@ public class RobotConstants {
     }
 
     public class Config {
-      public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
+      public static final MotorOutputConfigs IntakeConfig =
+          new MotorOutputConfigs()
+              .withNeutralMode(NeutralModeValue.Brake)
+              .withInverted(InvertedValue.Clockwise_Positive);
 
-      public static final InvertedValue MotorInverted =
-          InvertedValue.Clockwise_Positive; // Motor inverstion type (CW+ / CCW+)
-      public static final InvertedValue AngleMotorInverted =
-          InvertedValue.CounterClockwise_Positive; // Motor inverstion type (CW+ / CCW+)
-      public static final double CurrentLimit = 40.0; // Max current in Amperes
+      public static final MotorOutputConfigs AngleConfig =
+          new MotorOutputConfigs()
+              .withNeutralMode(NeutralModeValue.Brake)
+              .withInverted(InvertedValue.CounterClockwise_Positive);
+
+      public static final CurrentLimitsConfigs AngleCurrentConfig =
+          new CurrentLimitsConfigs()
+              .withStatorCurrentLimit(40.0)
+              .withStatorCurrentLimitEnable(true);
     }
   }
 
@@ -95,9 +102,9 @@ public class RobotConstants {
 
     public class SecondaryArm {
       public class PIDFF {
-        public static final double kP = 0;
+        public static final double kP = 0.0035;
         public static final double kI = 0;
-        public static final double kD = 0;
+        public static final double kD = 0.00002;
 
         public static final double kS = 0;
         public static final double kG = 0;
@@ -106,16 +113,33 @@ public class RobotConstants {
       }
 
       public class Angles {
-        // TODO:: COMPLETE THIS
+        public static final double Home = 0.0;
+        
+        public static final double GroundIntake = 60.0;
+
+        public static final double ReefTopIntake = 30.0;
+        public static final double ReefBottomIntake = 30.0;
+
+        public static final double ThrowAngle = 40.0;
       }
     }
 
     public class Config {
-      public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
+      public static final MotorOutputConfigs IntakeConfig =
+          new MotorOutputConfigs()
+              .withNeutralMode(NeutralModeValue.Brake)
+              .withInverted(InvertedValue.CounterClockwise_Positive);
 
-      public static final InvertedValue MotorInverted =
-          InvertedValue.CounterClockwise_Positive; // Motor inverstion type (CW+ / CCW+)
-      public static final double CurrentLimit = 40.0; // Max current in Amperes
+      public static final MotorOutputConfigs SecondaryConfig =
+          new MotorOutputConfigs()
+              .withNeutralMode(NeutralModeValue.Brake)
+              .withInverted(InvertedValue.Clockwise_Positive);
+
+      public static final CANcoderConfiguration CANCoderConfig =
+          new CANcoderConfiguration()
+              .withMagnetSensor(
+                  new MagnetSensorConfigs()
+                      .withSensorDirection(SensorDirectionValue.Clockwise_Positive));
     }
   }
 
@@ -154,11 +178,15 @@ public class RobotConstants {
     }
 
     public class Config {
-      public static final NeutralModeValue NeutralMode = NeutralModeValue.Brake;
+      public static final MotorOutputConfigs MotorsConfig =
+          new MotorOutputConfigs()
+              .withNeutralMode(NeutralModeValue.Brake)
+              .withInverted(InvertedValue.CounterClockwise_Positive);
 
-      public static final InvertedValue MotorInverted =
-          InvertedValue.CounterClockwise_Positive; // Motor inversion type (CW+ / CCW+)
-      public static final double CurrentLimit = 40.0; // Max current in Amperes
+      public static final CurrentLimitsConfigs CurrentConfig =
+          new CurrentLimitsConfigs()
+              .withStatorCurrentLimit(40.0)
+              .withStatorCurrentLimitEnable(true);
     }
   }
 

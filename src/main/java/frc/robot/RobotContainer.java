@@ -119,6 +119,8 @@ public class RobotContainer {
         break;
     }
 
+    // NamedCommands for autonomous //
+
     NamedCommands.registerCommand(
         "Move Backwards L4", DriveCommands.driveBackwards(drive).withTimeout(0.3));
     NamedCommands.registerCommand(
@@ -154,6 +156,8 @@ public class RobotContainer {
         "Coral Start Commands", CoralCommands.SetIsRunningCommand(coral, true));
     NamedCommands.registerCommand(
         "Coral Stop Commands", CoralCommands.SetIsRunningCommand(coral, false));
+
+    // // // // // // //
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -236,11 +240,11 @@ public class RobotContainer {
                 AlgaeCommands.Intake(algae),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.BottomAlgae),
-                AlgaeCommands.setSecondarySetpoint(algae, 30)))
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ReefBottomIntake)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
-                AlgaeCommands.setSecondarySetpoint(algae, 0),
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 AlgaeCommands.SetIsRunningCommand(algae, false)));
@@ -253,15 +257,15 @@ public class RobotContainer {
                 AlgaeCommands.Intake(algae),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.TopAlgae),
-                AlgaeCommands.setSecondarySetpoint(algae, 30)))
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ReefTopIntake)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
-                AlgaeCommands.setSecondarySetpoint(algae, 0),
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight)));
 
-    // Top algae intake
+    // Ground algae intake
     operatorController
         .y()
         .onTrue(
@@ -269,12 +273,12 @@ public class RobotContainer {
                 AlgaeCommands.SetIsRunningCommand(algae, true),
                 ElevatorCommands.SetSetpoint(elevator, 5),
                 AlgaeCommands.Intake(algae),
-                AlgaeCommands.setSecondarySetpoint(algae, 60)))
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.GroundIntake)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
                 ElevatorCommands.SetSetpoint(elevator, 0),
-                AlgaeCommands.setSecondarySetpoint(algae, 0),
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 AlgaeCommands.SetIsRunningCommand(algae, false)));
 
     // Starts Intaking for coral when B button is pressed (B)
@@ -289,19 +293,20 @@ public class RobotContainer {
         .onTrue(CoralCommands.Outtake(coral))
         .onFalse(CoralCommands.stopMotor(coral));
 
+    // Throws algae when LB button is pressed (LB)
     operatorController
         .leftBumper()
         .onTrue(
             Commands.sequence(
                 AlgaeCommands.SetIsRunningCommand(algae, true),
                 AlgaeCommands.SetIsLBHeld(algae, true),
-                AlgaeCommands.setSecondarySetpoint(algae, 40),
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ThrowAngle),
                 AlgaeCommands.Outtake(algae)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.SetIsRunningCommand(algae, false),
                 AlgaeCommands.SetIsLBHeld(algae, false),
-                AlgaeCommands.setSecondarySetpoint(algae, 0),
+                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 AlgaeCommands.stopMotor(algae)));
 
     operatorController
@@ -344,29 +349,30 @@ public class RobotContainer {
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
                 ));
 
-    operatorController
-        .pov(90)
-        .onTrue(
-            Commands.sequence(
-                Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
-                ElevatorCommands.SetSetpoint(
-                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.L1),
-                Commands.runOnce(
-                    () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home + 4),
-                    coral) // First action
-                ))
-        .onFalse(
-            Commands.sequence(
-                CoralCommands.OuttakeSlow(coral).withTimeout(3),
-                Commands.runOnce(
-                        () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home),
-                        coral)
-                    .withTimeout(2), // First action
-                CoralCommands.stopMotor(coral),
-                ElevatorCommands.SetSetpoint(
-                    elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
-                Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
-                ));
+    // UNUSED BUTTON
+    // operatorController
+    //     .pov(90)
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
+    //             ElevatorCommands.SetSetpoint(
+    //                 elevator, RobotConstants.ElevatorSubsystem.Setpoints.L1),
+    //             Commands.runOnce(
+    //                 () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home + 4),
+    //                 coral) // First action
+    //             ))
+    //     .onFalse(
+    //         Commands.sequence(
+    //             CoralCommands.OuttakeSlow(coral).withTimeout(3),
+    //             Commands.runOnce(
+    //                     () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home),
+    //                     coral)
+    //                 .withTimeout(2), // First action
+    //             CoralCommands.stopMotor(coral),
+    //             ElevatorCommands.SetSetpoint(
+    //                 elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
+    //             Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
+    //             ));
 
     // dont ask
     operatorController.pov(0).onTrue(DriveCommands.driveBackwards(drive).withTimeout(0.3));
@@ -426,38 +432,19 @@ public class RobotContainer {
 
     // debugController.y().onTrue(DriveCommands.driveToReefRight());
 
-    // .onFalse(
-    //     Commands.runOnce(
-    //         () -> {
-    //             ElevatorCommands.SetSetpoint(elevator,
-    // RobotConstants.ElevatorSubsystem.Setpoints.Home));
-    //         },
-    //         coral));
-
-    // Starts Intaking for algae when A button is pressed (A)
-    // operatorController
-    //     .a()
-    //     .onTrue(AlgaeCommands.Intake(algae))
-    //     .onFalse(AlgaeCommands.stopMotor(algae));
-
-    // // Throws algae when X button is pressed (X)
-    // operatorController
-    //     .x()
-    //     .onTrue(AlgaeCommands.Outtake(algae))
-    //     .onFalse(AlgaeCommands.stopMotor(algae));
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // OPERATOR CONTROLS PLAN:-
-    // A - Coral Intake (Toggle)
-    // Y - Algae Intake (Toggle)
-    // POV UP - L4 Scoring (Angle on hold, Score on release if has coral)
-    // POV RIGHT - L3 Scoring (Angle on hold, Score on release if has coral)
-    // POV DOWN - L2 Scoring (Angle on hold, Score on release if has coral)
-    // POV LEFT - L1 (Trough) Scoring
-    // RB + LB - Net Scoring Angle (Elevator + Arms) for Algae
-    // X - Throw Algae (For Processor + Net + Incase Stuck) (Hold)
-    // B - Throw Coral Incase Stuck (Hold)
+    // A - Bottom algae intake (Hold)
+    // X - Top algae intake (Hold)
+    // B - Coral human intake (Hold)
+    // Y - Algae ground Intake (Hold)
+    // POV UP - L4 Scoring (Hold)
+    // POV LEFT - L3 Scoring (Hold)
+    // POV DOWN - L2 Scoring (Hold)
+    // POV RIGHT - L1 (Trough) Scoring (Hold) [UNUSED]
+    // RB - Coral throw (Hold)
+    // LB - Algae throw (Hold)
   }
 
   /**

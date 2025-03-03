@@ -4,13 +4,10 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -34,9 +31,6 @@ public class Elevator extends SubsystemBase {
           RobotConstants.ElevatorSubsystem.PIDFF.kV,
           RobotConstants.ElevatorSubsystem.PIDFF.kA); // kS, kG, kV, kA
 
-  // Controllers
-  XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
-
   // Variables
   @AutoLogOutput(key = "Elevator/Setpoint")
   double elevatorSetpoint = 0.0;
@@ -50,21 +44,12 @@ public class Elevator extends SubsystemBase {
   /** Creates a new Elevator. */
   public Elevator() {
     // Motor Config //
-    var Config = new MotorOutputConfigs();
-    Config.Inverted = RobotConstants.ElevatorSubsystem.Config.MotorInverted;
-    Config.NeutralMode = RobotConstants.ElevatorSubsystem.Config.NeutralMode;
-
-    TopMotor.getConfigurator().apply(Config);
-    BottomMotor.getConfigurator().apply(Config);
+    TopMotor.getConfigurator().apply(RobotConstants.ElevatorSubsystem.Config.MotorsConfig);
+    BottomMotor.getConfigurator().apply(RobotConstants.ElevatorSubsystem.Config.MotorsConfig);
 
     // Current Limiter //
-    var currentLimits = new CurrentLimitsConfigs();
-
-    currentLimits.StatorCurrentLimit = RobotConstants.ElevatorSubsystem.Config.CurrentLimit;
-    currentLimits.StatorCurrentLimitEnable = true; // Enable stator current limiting
-
-    TopMotor.getConfigurator().apply(currentLimits);
-    BottomMotor.getConfigurator().apply(currentLimits);
+    TopMotor.getConfigurator().apply(RobotConstants.ElevatorSubsystem.Config.CurrentConfig);
+    BottomMotor.getConfigurator().apply(RobotConstants.ElevatorSubsystem.Config.CurrentConfig);
     //  //  //  //  //  //
 
     // Zeroing the selected sensor position
@@ -72,7 +57,7 @@ public class Elevator extends SubsystemBase {
     TopMotor.getConfigurator().setPosition(0.0);
     BottomMotor.getConfigurator().setPosition(0.0);
 
-    pid.setSetpoint(0);
+    pid.setSetpoint(RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight);
   }
 
   /** Sets the voltage of both of the elevator motors */

@@ -4,34 +4,25 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Coral extends SubsystemBase {
-
+  // Motors
   public TalonFX coralIntake = new TalonFX(RobotConstants.CoralSubsystem.IntakeMotorId);
   public TalonFX coralAngleMotor = new TalonFX(RobotConstants.CoralSubsystem.AngleSystem.MotorId);
-  private final double GEAR_RATIO = 45.0; // 1:45 gear ratio
-  private final double TICKS_PER_REV = 2048.0; // TalonFX Encoder Resolution
 
+  // Sensors
   public CANrange sensor = new CANrange(RobotConstants.CoralSubsystem.CANRangeId);
 
-  XboxController operatorController = new XboxController(RobotConstants.Controllers.OperatorPortId);
-  CommandXboxController commandOperatorController =
-      new CommandXboxController(RobotConstants.Controllers.OperatorPortId);
-
+  // Motion Controls
   private final PIDController pid =
       new PIDController(
           RobotConstants.CoralSubsystem.AngleSystem.PIDFF.kP,
@@ -45,6 +36,7 @@ public class Coral extends SubsystemBase {
           RobotConstants.CoralSubsystem.AngleSystem.PIDFF.kV,
           RobotConstants.CoralSubsystem.AngleSystem.PIDFF.kA); // kS, kG, kV, kA
 
+  // Variables
   @AutoLogOutput(key = "Coral/AngePIDOutput")
   double output = 0.0;
 
@@ -55,69 +47,56 @@ public class Coral extends SubsystemBase {
 
   public Coral() {
     // Motor Config //
-    var Config = new MotorOutputConfigs();
-    Config.NeutralMode = RobotConstants.CoralSubsystem.Config.NeutralMode;
-    Config.Inverted = RobotConstants.CoralSubsystem.Config.MotorInverted;
-    var AngleConfig = new MotorOutputConfigs();
-    AngleConfig.NeutralMode = RobotConstants.CoralSubsystem.Config.NeutralMode;
-    AngleConfig.Inverted = RobotConstants.CoralSubsystem.Config.AngleMotorInverted;
-
-    coralIntake.getConfigurator().apply(Config);
-    coralAngleMotor.getConfigurator().apply(AngleConfig);
+    coralIntake.getConfigurator().apply(RobotConstants.CoralSubsystem.Config.IntakeConfig);
+    coralAngleMotor.getConfigurator().apply(RobotConstants.CoralSubsystem.Config.AngleConfig);
 
     // Current Limiter //
-    var currentLimits = new CurrentLimitsConfigs();
-
-    currentLimits.StatorCurrentLimit = RobotConstants.CoralSubsystem.Config.CurrentLimit;
-    currentLimits.StatorCurrentLimitEnable = true; // Enable stator current limiting
-
-    coralAngleMotor.getConfigurator().apply(currentLimits);
+    coralAngleMotor
+        .getConfigurator()
+        .apply(RobotConstants.CoralSubsystem.Config.AngleCurrentConfig);
     //  //  //  //  //  //
 
     coralAngleMotor.getConfigurator().setPosition(0.0);
 
     pid.setSetpoint(0);
-
     pid.setTolerance(0.2);
   }
 
+  /** Returns the current sensor distance */
   @AutoLogOutput(key = "Coral/Sensor/Distance")
   public double getSensorDistance() {
     return sensor.getDistance().getValueAsDouble();
   }
 
-  @AutoLogOutput(key = "Coral/Angle/Rotations")
-  public double getOutputRotations() {
-    double motorPosition = coralAngleMotor.getPosition().getValueAsDouble(); // Get encoder ticks
-    return motorPosition / (GEAR_RATIO * TICKS_PER_REV); // Convert back to output rotations
-  }
-
+  /** Returns true if the coral subsystem senses a coral, reutrns false otherwise */
   @AutoLogOutput(key = "Coral/HasCoral")
   public boolean hasCoral() {
     return (sensor.getDistance().getValueAsDouble()
-                <= RobotConstants.CoralSubsystem.hasCoralThreshold
-            && sensor.getAmbientSignal().getValueAsDouble() <= 10)
-        ? true
-        : false;
+            <= RobotConstants.CoralSubsystem.hasCoralThreshold
+        && sensor.getAmbientSignal().getValueAsDouble() <= 10);
   }
 
+  /** Changes the coral angle setpoint */
   public void setSetpoint(double Setpoint) {
     setpoint = Setpoint;
   }
 
+  /**
+   * Method that indicates to the subsystem that there is a command currently using the current
+   * subsystem
+   */
   public void setIsRunningCommand(boolean flag) {
     isRunningCommand = flag;
   }
 
+  /** Returns the current coral angle position (motor encoder x 4) */
   @AutoLogOutput(key = "Coral/CurrentAnglePosition")
   public double getCoralPosition() {
     return coralAngleMotor.getPosition().getValueAsDouble() * 4.0;
   }
 
-  @Override
-  public void periodic() {
-    output = pid.calculate(getCoralPosition());
-
+  /** Updates the LED state based on the sensors */
+  public void updateLEDs() {
     if (hasCoral()) {
       LEDs.currentColor = "WHITE";
       if (isRunningCommand == false) {
@@ -129,6 +108,11 @@ public class Coral extends SubsystemBase {
         setpoint = RobotConstants.CoralSubsystem.Setpoints.HumanIntake;
       }
     }
+  }
+
+  @Override
+  public void periodic() {
+    output = pid.calculate(getCoralPosition());
 
     pid.setSetpoint(setpoint);
 
@@ -139,6 +123,8 @@ public class Coral extends SubsystemBase {
                     RobotConstants.CoralSubsystem.AngleSystem.LaunchMaxSpeed)
                 * 12.0
             + feedforward.calculate(setpoint, output));
+
+    updateLEDs();
 
     Logger.recordOutput(
         "Coral/CurrentAnglePosition", coralAngleMotor.getPosition().getValueAsDouble());
