@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
@@ -21,6 +22,8 @@ public class Coral extends SubsystemBase {
 
   // Sensors
   public CANrange sensor = new CANrange(RobotConstants.CoralSubsystem.CANRangeId);
+  public CANcoder cancoder =
+      new CANcoder(RobotConstants.CoralSubsystem.AngleSystem.AngleCANCoderId);
 
   // Motion Controls
   private final PIDController pid =
@@ -76,6 +79,12 @@ public class Coral extends SubsystemBase {
         && sensor.getAmbientSignal().getValueAsDouble() <= 10);
   }
 
+  /** Returns the current coral arm angle position (CANCoder [0-100]) */
+  @AutoLogOutput(key = "Coral/Angle/Position")
+  public double getCANCoderPosition() {
+    return (cancoder.getPosition().getValueAsDouble() - 0.001220703125) * 175; // offset
+  }
+
   /** Changes the coral angle setpoint */
   public void setSetpoint(double Setpoint) {
     setpoint = Setpoint;
@@ -112,7 +121,7 @@ public class Coral extends SubsystemBase {
 
   @Override
   public void periodic() {
-    output = pid.calculate(getCoralPosition());
+    output = pid.calculate(getCANCoderPosition());
 
     pid.setSetpoint(setpoint);
 
@@ -128,5 +137,6 @@ public class Coral extends SubsystemBase {
 
     Logger.recordOutput(
         "Coral/CurrentAnglePosition", coralAngleMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput("Coral/CORALANGLESETPOINT", pid.getSetpoint());
   }
 }

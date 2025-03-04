@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -58,6 +59,8 @@ public class Elevator extends SubsystemBase {
     BottomMotor.getConfigurator().setPosition(0.0);
 
     pid.setSetpoint(RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight);
+
+    SmartDashboard.putNumber("Elevator_kG", 0);
   }
 
   /** Sets the voltage of both of the elevator motors */

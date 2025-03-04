@@ -37,14 +37,15 @@ public class RobotConstants {
 
     public class AngleSystem {
       public static final int MotorId = 34;
+      public static final int AngleCANCoderId = 59;
 
       public static final double LaunchMaxSpeed = 0.4;
       public static final double ReturnMaxSpeed = -0.3;
 
       public class PIDFF {
-        public static final double kP = 0.035;
+        public static final double kP = 0.01;
         public static final double kI = 0;
-        public static final double kD = 0.002;
+        public static final double kD = 0.00001;
 
         public static final double kS = 0;
         public static final double kG = 0;
@@ -54,11 +55,12 @@ public class RobotConstants {
     }
 
     public class Setpoints { // Change to CANCoder angles (These are motor positions)
-      public static final double NormalScoring = 25.0 * 4 + 0.5;
-      public static final double MiddleScoring = 24.5 * 4 + 1.3;
-      public static final double TopScoring = 109.44;
+      public static final double NormalScoring = 101.5;
+      public static final double MiddleScoring = 101.5;
+      public static final double TopScoring = 110;
 
-      public static final double HumanIntake = 18.9 + 0.3;
+      public static final double HumanIntake = 21.0;
+      // public static final double HumanIntake2 = 16.0;
       public static final double Home = 0.0;
 
       public static final double Center = 26.2 * 4.0 / 2.0; // (Top of the elevator)
@@ -94,7 +96,7 @@ public class RobotConstants {
     public static final int CANRangeId = 50; // Distance sensor
     public static final double hasAlgaeThreshold = 0.1; // The value where the sensor sees an algae
 
-    public static final double IntakeSpeed = 0.5; // Default Intake Speed
+    public static final double IntakeSpeed = 0.3; // Default Intake Speed
     public static final double IntakeHoldbackSpeed =
         0.08; // Intake speed when holding an algae (This is to hold the algae in place).
 
@@ -104,7 +106,7 @@ public class RobotConstants {
       public class PIDFF {
         public static final double kP = 0.0035;
         public static final double kI = 0;
-        public static final double kD = 0.00002;
+        public static final double kD = 0;
 
         public static final double kS = 0;
         public static final double kG = 0;
@@ -114,13 +116,13 @@ public class RobotConstants {
 
       public class Angles {
         public static final double Home = 0.0;
-        
-        public static final double GroundIntake = 60.0;
 
-        public static final double ReefTopIntake = 30.0;
-        public static final double ReefBottomIntake = 30.0;
+        public static final double GroundIntake = 87.15;
 
-        public static final double ThrowAngle = 40.0;
+        public static final double ReefTopIntake = 55.5;
+        public static final double ReefBottomIntake = 55.5;
+
+        public static final double ThrowAngle = 60;
       }
     }
 
@@ -128,12 +130,12 @@ public class RobotConstants {
       public static final MotorOutputConfigs IntakeConfig =
           new MotorOutputConfigs()
               .withNeutralMode(NeutralModeValue.Brake)
-              .withInverted(InvertedValue.CounterClockwise_Positive);
+              .withInverted(InvertedValue.Clockwise_Positive);
 
       public static final MotorOutputConfigs SecondaryConfig =
           new MotorOutputConfigs()
               .withNeutralMode(NeutralModeValue.Brake)
-              .withInverted(InvertedValue.Clockwise_Positive);
+              .withInverted(InvertedValue.CounterClockwise_Positive);
 
       public static final CANcoderConfiguration CANCoderConfig =
           new CANcoderConfiguration()
@@ -148,7 +150,7 @@ public class RobotConstants {
     public static final int BottomMotorId = 33;
 
     public static final double AscendMaxSpeed = 0.5; // 0.5
-    public static final double DescendMaxSpeed = -0.4; // (Negative value)
+    public static final double DescendMaxSpeed = -0.4; // -0.4 (Negative value)
 
     public class PIDFF {
       public static final double kP = 0.05; // 0.1;
@@ -156,19 +158,19 @@ public class RobotConstants {
       public static final double kD = 0;
 
       public static final double kS = 0;
-      public static final double kG = 0.479; // Manually calculated
+      public static final double kG = 0.34; // Manually calculated
       public static final double kV = 0;
       public static final double kA = 0;
     }
 
     public class Setpoints {
       public static final double MaxHeight = 77; // based on the motor sensor
-      public static final double MinimumHeight = -1.0; // based on the motor sensor
+      public static final double MinimumHeight = 1; // based on the motor sensor
 
-      public static final double L0 = -1.0; // -1.0 is basically 0
-      public static final double L1 = -1.0; // -1.0 is basically 0
+      public static final double L0 = 1; // -1.0 is basically 0
+      public static final double L1 = 1; // -1.0 is basically 0
       public static final double L2 = 21.0; // 22.5
-      public static final double L3 = 63.0; // not tested yet
+      public static final double L3 = 59.0; // not tested yet
       public static final double TopAlgae = 45.0; // not tested yet
       public static final double BottomAlgae = 26.0; // not tested yet
 

@@ -240,11 +240,13 @@ public class RobotContainer {
                 AlgaeCommands.Intake(algae),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.BottomAlgae),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ReefBottomIntake)))
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ReefBottomIntake)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 AlgaeCommands.SetIsRunningCommand(algae, false)));
@@ -257,11 +259,13 @@ public class RobotContainer {
                 AlgaeCommands.Intake(algae),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.TopAlgae),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ReefTopIntake)))
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ReefTopIntake)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight)));
 
@@ -271,14 +275,14 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 AlgaeCommands.SetIsRunningCommand(algae, true),
-                ElevatorCommands.SetSetpoint(elevator, 5),
                 AlgaeCommands.Intake(algae),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.GroundIntake)))
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.GroundIntake)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.stopMotor(algae),
-                ElevatorCommands.SetSetpoint(elevator, 0),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 AlgaeCommands.SetIsRunningCommand(algae, false)));
 
     // Starts Intaking for coral when B button is pressed (B)
@@ -300,13 +304,16 @@ public class RobotContainer {
             Commands.sequence(
                 AlgaeCommands.SetIsRunningCommand(algae, true),
                 AlgaeCommands.SetIsLBHeld(algae, true),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ThrowAngle),
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ThrowAngle),
+                new WaitCommand(0.2),
                 AlgaeCommands.Outtake(algae)))
         .onFalse(
             Commands.sequence(
                 AlgaeCommands.SetIsRunningCommand(algae, false),
                 AlgaeCommands.SetIsLBHeld(algae, false),
-                AlgaeCommands.setSecondarySetpoint(algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
+                AlgaeCommands.setSecondarySetpoint(
+                    algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home),
                 AlgaeCommands.stopMotor(algae)));
 
     operatorController
@@ -375,7 +382,7 @@ public class RobotContainer {
     //             ));
 
     // dont ask
-    operatorController.pov(0).onTrue(DriveCommands.driveBackwards(drive).withTimeout(0.3));
+    // operatorController.pov(0).onTrue(DriveCommands.driveBackwards(drive).withTimeout(0.3));
     operatorController
         .pov(0)
         .onTrue(
