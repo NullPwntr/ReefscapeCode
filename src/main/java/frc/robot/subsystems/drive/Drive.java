@@ -67,8 +67,8 @@ public class Drive extends SubsystemBase {
   private final List<Integer> blueAllianceReefTagIds = List.of(17, 18, 19, 20, 21, 22);
 
   // Define separate offsets for X (right-left) and Y (forward-backward)
-  private final double REEF_X_OFFSET = 0.2; // Moves perpendicular to tag orientation
-  private final double REEF_Y_OFFSET = 0.8; // Moves parallel to tag orientation
+  private final double REEF_X_OFFSET = 0.2 - 0.08; // Moves perpendicular to tag orientation
+  private final double REEF_Y_OFFSET = 0.8; // Moves parallel to tag orientation - 0.3
 
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
@@ -346,9 +346,19 @@ public class Drive extends SubsystemBase {
     return getReefLeft(getClosestReefAprilTagToRobot());
   }
 
+  @AutoLogOutput(key = "Poses/PoseClosestLeftClose")
+  public Pose2d getClosesPose2dLeftClose() {
+    return getReefLeftClose(getClosestReefAprilTagToRobot());
+  }
+
   @AutoLogOutput(key = "Poses/PoseClosestRight")
   public Pose2d getClosesPose2dRight() {
     return getReefRight(getClosestReefAprilTagToRobot());
+  }
+
+  @AutoLogOutput(key = "Poses/PoseClosestRight")
+  public Pose2d getClosesPose2dRightClose() {
+    return getReefRightClose(getClosestReefAprilTagToRobot());
   }
 
   @AutoLogOutput(key = "Poses/AprilTagIdClosest")
@@ -402,12 +412,38 @@ public class Drive extends SubsystemBase {
     // Compute right reef position
     double reefX =
         tagX
-            + REEF_X_OFFSET * Math.cos(tagYaw + Math.PI / 2) // Right shift
+            + (REEF_X_OFFSET + 0.1) * Math.cos(tagYaw + Math.PI / 2) // Right shift
             + REEF_Y_OFFSET * Math.cos(tagYaw); // Forward shift
     double reefY =
         tagY
-            + REEF_X_OFFSET * Math.sin(tagYaw + Math.PI / 2) // Right shift
+            + (REEF_X_OFFSET + 0.1) * Math.sin(tagYaw + Math.PI / 2) // Right shift
             + REEF_Y_OFFSET * Math.sin(tagYaw); // Forward shift
+
+    return new Pose2d(
+        reefX,
+        reefY,
+        new Rotation2d(Math.toRadians(Math.ceil(Math.toDegrees(tagYaw - Math.PI)) + 0.01)));
+  }
+
+  public Pose2d getReefRightClose(int aprilTagId) {
+    Pose3d tagPose =
+        field
+            .getTagPose(aprilTagId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid AprilTag ID: " + aprilTagId));
+
+    double tagX = tagPose.getX();
+    double tagY = tagPose.getY();
+    double tagYaw = tagPose.getRotation().getZ(); // Rotation in radians
+
+    // Compute right reef position
+    double reefX =
+        tagX
+            + (REEF_X_OFFSET + 0.1) * Math.cos(tagYaw + Math.PI / 2) // Right shift
+            + (REEF_Y_OFFSET - 0.4) * Math.cos(tagYaw); // Forward shift
+    double reefY =
+        tagY
+            + (REEF_X_OFFSET + 0.1) * Math.sin(tagYaw + Math.PI / 2) // Right shift
+            + (REEF_Y_OFFSET - 0.4) * Math.sin(tagYaw); // Forward shift
 
     return new Pose2d(
         reefX,
@@ -434,6 +470,32 @@ public class Drive extends SubsystemBase {
         tagY
             + REEF_X_OFFSET * Math.sin(tagYaw - Math.PI / 2) // Left shift
             + REEF_Y_OFFSET * Math.sin(tagYaw); // Forward shift
+
+    return new Pose2d(
+        reefX,
+        reefY,
+        new Rotation2d(Math.toRadians(Math.ceil(Math.toDegrees(tagYaw - Math.PI)) + 0.01)));
+  }
+
+  public Pose2d getReefLeftClose(int aprilTagId) {
+    Pose3d tagPose =
+        field
+            .getTagPose(aprilTagId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid AprilTag ID: " + aprilTagId));
+
+    double tagX = tagPose.getX();
+    double tagY = tagPose.getY();
+    double tagYaw = tagPose.getRotation().getZ(); // Rotation in radians
+
+    // Compute left reef position
+    double reefX =
+        tagX
+            + REEF_X_OFFSET * Math.cos(tagYaw - Math.PI / 2) // Left shift
+            + (REEF_Y_OFFSET - 0.4) * Math.cos(tagYaw); // Forward shift
+    double reefY =
+        tagY
+            + REEF_X_OFFSET * Math.sin(tagYaw - Math.PI / 2) // Left shift
+            + (REEF_Y_OFFSET - 0.4) * Math.sin(tagYaw); // Forward shift
 
     return new Pose2d(
         reefX,

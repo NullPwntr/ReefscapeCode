@@ -30,14 +30,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.LimelightHelpers;
 import frc.robot.RobotConstants;
+import frc.robot.commands.ReefCommands.*;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -124,41 +123,15 @@ public class DriveCommands {
   //       drive);
   // }
 
-  static PIDController reefAimPID = new PIDController(0.023, 0, 0);
-
   public static Command joystickDrive(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
       DoubleSupplier rightTriggerSupplier,
-      DoubleSupplier leftTriggerSupplier,
-      BooleanSupplier rightBumperSupplier,
-      BooleanSupplier leftBumperSupplier) {
+      DoubleSupplier leftTriggerSupplier) {
     return Commands.run(
         () -> {
-          double rightTx = LimelightHelpers.getTX("limelight-right");
-          double leftTx = LimelightHelpers.getTX("limelight-left");
-
-          double output = 0;
-          if (rightBumperSupplier.getAsBoolean()) {
-            if (LimelightHelpers.getTV("limelight-left")) {
-              output = reefAimPID.calculate(leftTx);
-            } else {
-              output = 0.0;
-            }
-
-            reefAimPID.setSetpoint(21.5);
-          } else if (leftBumperSupplier.getAsBoolean()) {
-            if (LimelightHelpers.getTV("limelight-right")) {
-              output = reefAimPID.calculate(rightTx);
-            } else {
-              output = 0.0;
-            }
-
-            reefAimPID.setSetpoint(-12.3);
-          }
-
           // Get linear velocity from the joysticks
           Translation2d linearVelocity =
               getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -223,9 +196,6 @@ public class DriveCommands {
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
                       : drive.getRotation());
 
-          // ADD THE OUTPUT AS ROBOT-RELATIVE MOVEMENT (APRILTAGS ARE SOMETIMES ANGLED)
-          robotRelativeSpeeds.vyMetersPerSecond += output;
-
           drive.runVelocity(robotRelativeSpeeds);
         },
         drive);
@@ -277,6 +247,18 @@ public class DriveCommands {
 
   public static Command driveToReefLeft(Drive drive) {
     return new DriveToReefLeft(drive);
+  }
+
+  public static Command driveToReefLeftClose(Drive drive) {
+    return new DriveToReefLeftClose(drive);
+  }
+
+  public static Command driveToReefRight(Drive drive) {
+    return new DriveToReefRight(drive);
+  }
+
+  public static Command driveToReefRightClose(Drive drive) {
+    return new DriveToReefRightClose(drive);
   }
 
   public static Command goToPosePID(Drive drive, Pose2d targetPose) {

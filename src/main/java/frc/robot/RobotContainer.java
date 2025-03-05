@@ -219,9 +219,7 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
             () -> driverController.getRightTriggerAxis(),
-            () -> driverController.getLeftTriggerAxis(),
-            driverController.rightBumper(),
-            driverController.leftBumper()));
+            () -> driverController.getLeftTriggerAxis()));
 
     ////////////////////////////////////////////////////////// V-- DRIVER --V
     // ///////////////////////////////////////////////////////////////////////////
@@ -250,6 +248,16 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+    driverController
+        .leftBumper()
+        .onTrue(
+            Commands.sequence(
+                DriveCommands.driveToReefLeft(drive), DriveCommands.driveToReefLeftClose(drive)));
+    driverController
+        .rightBumper()
+        .onTrue(
+            Commands.sequence(
+                DriveCommands.driveToReefRight(drive), DriveCommands.driveToReefRightClose(drive)));
     ////////////////////////////////////////////////////////// V-- OPERATOR --V
     // ///////////////////////////////////////////////////////////////////////////
 
@@ -459,7 +467,7 @@ public class RobotContainer {
     //             AlgaeCommands.SetIsRunningCommand(algae, false),
     //             AlgaeCommands.SetIsNetScoring(algae, false)));
 
-    debugController.y().onTrue(DriveCommands.driveToReefLeft(drive));
+    // debugController.y().onTrue(DriveCommands.driveToReefLeft(drive));
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
