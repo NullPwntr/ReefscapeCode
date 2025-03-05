@@ -8,15 +8,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.List;
 
 public class AprilTagHelper {
-  AprilTagFieldLayout field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+  static AprilTagFieldLayout field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
   // AprilTag IDs for each alliance
-  private final List<Integer> redAllianceReefTagIds = List.of(6, 7, 8, 9, 10, 11);
-  private final List<Integer> blueAllianceReefTagIds = List.of(17, 18, 19, 20, 21, 22);
+  private static final List<Integer> redAllianceReefTagIds = List.of(6, 7, 8, 9, 10, 11);
+  private static final List<Integer> blueAllianceReefTagIds = List.of(17, 18, 19, 20, 21, 22);
 
-  private final double REEF_OFFSET = 0.5; // Adjust this distance for coral reef offset
+  // Define separate offsets for X (right-left) and Y (forward-backward)
+  private static final double REEF_X_OFFSET = 0.2; // Moves perpendicular to tag orientation
+  private static final double REEF_Y_OFFSET = 0.8; // Moves parallel to tag orientation
 
-  public Pose2d getReefRight(int aprilTagId) {
+  public static Pose2d getReefRight(int aprilTagId) {
     Pose3d tagPose =
         field
             .getTagPose(aprilTagId)
@@ -26,14 +28,23 @@ public class AprilTagHelper {
     double tagY = tagPose.getY();
     double tagYaw = tagPose.getRotation().getZ(); // Rotation in radians
 
-    // Compute right reef position (90 degrees from tagYaw)
-    double reefX = tagX + REEF_OFFSET * Math.cos(tagYaw + Math.PI / 2);
-    double reefY = tagY + REEF_OFFSET * Math.sin(tagYaw + Math.PI / 2);
+    // Compute right reef position
+    double reefX =
+        tagX
+            + REEF_X_OFFSET * Math.cos(tagYaw + Math.PI / 2) // Right shift
+            + REEF_Y_OFFSET * Math.cos(tagYaw); // Forward shift
+    double reefY =
+        tagY
+            + REEF_X_OFFSET * Math.sin(tagYaw + Math.PI / 2) // Right shift
+            + REEF_Y_OFFSET * Math.sin(tagYaw); // Forward shift
 
-    return new Pose2d(reefX, reefY, new Rotation2d(tagYaw));
+    return new Pose2d(
+        reefX,
+        reefY,
+        new Rotation2d(Math.toRadians(Math.ceil(Math.toDegrees(tagYaw - Math.PI)) + 0.01)));
   }
 
-  public Pose2d getReefLeft(int aprilTagId) {
+  public static Pose2d getReefLeft(int aprilTagId) {
     Pose3d tagPose =
         field
             .getTagPose(aprilTagId)
@@ -43,14 +54,23 @@ public class AprilTagHelper {
     double tagY = tagPose.getY();
     double tagYaw = tagPose.getRotation().getZ(); // Rotation in radians
 
-    // Compute left reef position (-90 degrees from tagYaw)
-    double reefX = tagX + REEF_OFFSET * Math.cos(tagYaw - Math.PI / 2);
-    double reefY = tagY + REEF_OFFSET * Math.sin(tagYaw - Math.PI / 2);
+    // Compute left reef position
+    double reefX =
+        tagX
+            + REEF_X_OFFSET * Math.cos(tagYaw - Math.PI / 2) // Left shift
+            + REEF_Y_OFFSET * Math.cos(tagYaw); // Forward shift
+    double reefY =
+        tagY
+            + REEF_X_OFFSET * Math.sin(tagYaw - Math.PI / 2) // Left shift
+            + REEF_Y_OFFSET * Math.sin(tagYaw); // Forward shift
 
-    return new Pose2d(reefX, reefY, new Rotation2d(tagYaw));
+    return new Pose2d(
+        reefX,
+        reefY,
+        new Rotation2d(Math.toRadians(Math.ceil(Math.toDegrees(tagYaw - Math.PI)) + 0.01)));
   }
 
-  public int getClosestReefAprilTagToRobot(Pose2d robotPose, boolean isRedAlliance) {
+  public static int getClosestReefAprilTagToRobot(Pose2d robotPose, boolean isRedAlliance) {
     double robotX = robotPose.getX();
     double robotY = robotPose.getY();
 

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.LimelightHelpers;
 import frc.robot.RobotConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -254,6 +255,66 @@ public class DriveCommands {
   //   Pose2d targetPose = new Pose2d(new Translation2d(14.35, 4.15), new Rotation2d(179));
   //   return AutoBuilder.pathfindToPose(targetPose, constraints);
   // }
+  // public static Command driveToReefLeft(Drive drive, Pose2d desiredPose) {
+  //   PathConstraints constraints =
+  //       new PathConstraints(2, 2, Units.degreesToRadians(180), Units.degreesToRadians(180));
+  //   Pose2d targetPose =
+  //       new Pose2d(
+  //           new Translation2d(desiredPose.getX(), desiredPose.getY()),
+  //           new Rotation2d(desiredPose.getRotation().getDegrees()));
+  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
+  // }
+  // public static Command driveToReefLeft(Drive drive) {
+  //   PathConstraints constraints =
+  //       new PathConstraints(2, 2, Units.degreesToRadians(180), Units.degreesToRadians(180));
+  //   Pose2d targetPose =
+  //       new Pose2d(
+  //           new Translation2d(
+  //               drive.getClosesPose2dLeft().getX(), drive.getClosesPose2dLeft().getY()),
+  //           new Rotation2d(drive.getClosesPose2dLeft().getRotation().getDegrees()));
+  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
+  // }
+
+  public static Command driveToReefLeft(Drive drive) {
+    return new DriveToReefLeft(drive);
+  }
+
+  public static Command goToPosePID(Drive drive, Pose2d targetPose) {
+    // PID controllers for X movement, Y movement, and rotation
+    PIDController xController = new PIDController(1.0, 0, 0);
+    PIDController yController = new PIDController(1.0, 0, 0);
+    PIDController rotationController = new PIDController(1.0, 0, 0);
+
+    rotationController.enableContinuousInput(-Math.PI, Math.PI); // Handle wraparound
+
+    return new RunCommand(
+            () -> {
+              // Get current robot pose
+              Pose2d currentPose = drive.getPose();
+
+              // Calculate PID outputs (setpoints = targetPose)
+              double backwardSpeed = xController.calculate(currentPose.getX(), targetPose.getX());
+              double sidewaysSpeed = yController.calculate(currentPose.getY(), targetPose.getY());
+              double rotationSpeed =
+                  rotationController.calculate(
+                      currentPose.getRotation().getRadians(),
+                      targetPose.getRotation().getRadians());
+
+              // Convert speeds to ChassisSpeeds (negative for backward movement)
+              ChassisSpeeds robotRelativeSpeeds =
+                  new ChassisSpeeds(backwardSpeed, sidewaysSpeed, rotationSpeed);
+
+              // Command the drive subsystem with these speeds
+              drive.runVelocity(robotRelativeSpeeds);
+            },
+            drive)
+        .until(
+            () ->
+                xController.atSetpoint()
+                    && yController.atSetpoint()
+                    && rotationController.atSetpoint())
+        .andThen(() -> drive.runVelocity(new ChassisSpeeds(0, 0, 0))); // Stop when finished
+  }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.

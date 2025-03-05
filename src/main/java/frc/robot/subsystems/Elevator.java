@@ -8,8 +8,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.AprilTagHelper;
 import frc.robot.RobotConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -80,6 +84,25 @@ public class Elevator extends SubsystemBase {
     return (TopMotor.getMotorVoltage().getValueAsDouble()
             + BottomMotor.getMotorVoltage().getValueAsDouble())
         / 2.0;
+  }
+
+  @AutoLogOutput(key = "Poses/APRILTAGEM")
+  public Pose2d getAprilTagPosition() {
+    // Pose2d[] poses = new Pose2d[6];
+    // for (int i = 6; i <= 11; i++) {
+    //   poses[i] = AprilTagHelper.getReefRight(i);
+    // }
+    return AprilTagHelper.getReefLeft(10);
+  }
+
+  @AutoLogOutput(key = "Poses/CLOSEST_APRILTAG")
+  public int closeset() {
+    // Pose2d[] poses = new Pose2d[6];
+    // for (int i = 6; i <= 11; i++) {
+    //   poses[i] = AprilTagHelper.getReefRight(i);
+    // }
+    return AprilTagHelper.getClosestReefAprilTagToRobot(
+        new Pose2d(new Translation2d(15, 4), new Rotation2d(0)), true);
   }
 
   @Override
