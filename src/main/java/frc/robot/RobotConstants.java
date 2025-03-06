@@ -96,7 +96,7 @@ public class RobotConstants {
     public static final int CANRangeId = 50; // Distance sensor
     public static final double hasAlgaeThreshold = 0.1; // The value where the sensor sees an algae
 
-    public static final double IntakeSpeed = 0.3; // Default Intake Speed
+    public static final double IntakeSpeed = 0.75; // Default Intake Speed
     public static final double IntakeHoldbackSpeed =
         0.08; // Intake speed when holding an algae (This is to hold the algae in place).
 
@@ -165,12 +165,12 @@ public class RobotConstants {
 
     public class Setpoints {
       public static final double MaxHeight = 77; // based on the motor sensor
-      public static final double MinimumHeight = 1; // based on the motor sensor
+      public static final double MinimumHeight = 2; // based on the motor sensor
 
-      public static final double L0 = 1; // -1.0 is basically 0
-      public static final double L1 = 1; // -1.0 is basically 0
+      public static final double L0 = 2; // -1.0 is basically 0
+      public static final double L1 = 2; // -1.0 is basically 0
       public static final double L2 = 21.0; // 22.5
-      public static final double L3 = 59.0; // not tested yet
+      public static final double L3 = 62.5; // not tested yet
       public static final double TopAlgae = 45.0; // not tested yet
       public static final double BottomAlgae = 26.0; // not tested yet
 

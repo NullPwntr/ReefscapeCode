@@ -225,14 +225,14 @@ public class RobotContainer {
     // ///////////////////////////////////////////////////////////////////////////
 
     // Lock to 0° when A button is held
-    driverController
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
-                () -> new Rotation2d()));
+    // driverController
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> -driverController.getLeftY(),
+    //             () -> -driverController.getLeftX(),
+    //             () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -258,6 +258,12 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 DriveCommands.driveToReefRight(drive), DriveCommands.driveToReefRightClose(drive)));
+    driverController
+        .a()
+        .onTrue(
+            Commands.sequence(
+                DriveCommands.driveToReefCenter(drive, elevator, algae),
+                DriveCommands.driveToReefCenterClose(drive)));
     ////////////////////////////////////////////////////////// V-- OPERATOR --V
     // ///////////////////////////////////////////////////////////////////////////
 

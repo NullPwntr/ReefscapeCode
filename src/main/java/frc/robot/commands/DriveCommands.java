@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.RobotConstants;
 import frc.robot.commands.ReefCommands.*;
+import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -259,6 +261,14 @@ public class DriveCommands {
 
   public static Command driveToReefRightClose(Drive drive) {
     return new DriveToReefRightClose(drive);
+  }
+
+  public static Command driveToReefCenter(Drive drive, Elevator elevator, Algae algae) {
+    return new DriveToReefCenter(drive, elevator, algae);
+  }
+
+  public static Command driveToReefCenterClose(Drive drive) {
+    return new DriveToReefCenterClose(drive);
   }
 
   public static Command goToPosePID(Drive drive, Pose2d targetPose) {
