@@ -53,7 +53,7 @@ public class DriveToReefCenter extends Command {
     xController.reset();
     yController.reset();
     thetaController.reset();
-    System.out.println("🚀 DriveToPosePID Started: Moving to " + targetPose);
+    // System.out.println("DriveToPosePID Started: Moving to " + targetPose);
 
     targetPose = drive.getClosesPose2dCenter();
     closesetTag = drive.getClosestReefAprilTagToRobot();

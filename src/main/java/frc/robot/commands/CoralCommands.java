@@ -36,6 +36,14 @@ public class CoralCommands {
         coral);
   }
 
+  public static Command SlowIntakeForCoral(Coral coral) {
+    return Commands.run(
+        () -> {
+          coral.coralIntake.set(0.045);
+        },
+        coral);
+  }
+
   public static Command stopMotor(Coral coral) {
     return Commands.runOnce(
         () -> {

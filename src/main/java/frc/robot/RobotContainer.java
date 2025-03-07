@@ -95,7 +95,7 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive::addVisionMeasurement, new VisionIOLimelight(camera0Name, drive::getRotation)
-                // ,new VisionIOLimelight(camera1Name, drive::getRotation)
+                // new VisionIOLimelight(camera1Name, drive::getRotation)
                 );
 
         break;
@@ -172,12 +172,27 @@ public class RobotContainer {
         Commands.runOnce(
             () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home), coral));
     NamedCommands.registerCommand(
+        "Coral Set Intake Angle",
+        Commands.runOnce(
+            () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.HumanIntake), coral));
+    NamedCommands.registerCommand(
         "Coral Start Outtake", CoralCommands.OuttakeSlow(coral).withTimeout(1));
+    NamedCommands.registerCommand("Coral Start Intake", CoralCommands.Intake(coral));
     NamedCommands.registerCommand("Coral Stop Motor", CoralCommands.stopMotor(coral));
     NamedCommands.registerCommand(
         "Coral Start Commands", CoralCommands.SetIsRunningCommand(coral, true));
     NamedCommands.registerCommand(
         "Coral Stop Commands", CoralCommands.SetIsRunningCommand(coral, false));
+    NamedCommands.registerCommand(
+        "Align To Closest Right Reef", DriveCommands.driveToReefRight(drive));
+    NamedCommands.registerCommand(
+        "Align To Closest Right Reef Close", DriveCommands.driveToReefRightClose(drive));
+    NamedCommands.registerCommand(
+        "Align To Closest Left Reef", DriveCommands.driveToReefLeft(drive));
+    NamedCommands.registerCommand(
+        "Align To Closest Left Reef Close", DriveCommands.driveToReefLeftClose(drive));
+
+    // DriveCommands.driveToReefRight(drive), DriveCommands.driveToReefRightClose(drive)
 
     // // // // // // //
 
@@ -220,6 +235,9 @@ public class RobotContainer {
             () -> -driverController.getRightX(),
             () -> driverController.getRightTriggerAxis(),
             () -> driverController.getLeftTriggerAxis()));
+
+    // slow intake for stable coral holding (only runs when no other coral commands are running)
+    coral.setDefaultCommand(CoralCommands.SlowIntakeForCoral(coral));
 
     ////////////////////////////////////////////////////////// V-- DRIVER --V
     // ///////////////////////////////////////////////////////////////////////////
@@ -423,11 +441,10 @@ public class RobotContainer {
         .pov(0)
         .onTrue(
             Commands.sequence(
-                new WaitCommand(0.25),
                 Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.L3),
-                // new WaitCommand(1),
+                new WaitCommand(1),
                 Commands.runOnce(
                     () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.TopScoring),
                     coral) // First action

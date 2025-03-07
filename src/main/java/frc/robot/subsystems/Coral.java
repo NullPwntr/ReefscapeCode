@@ -47,6 +47,7 @@ public class Coral extends SubsystemBase {
   double setpoint = 0.0;
 
   boolean isRunningCommand = false;
+  boolean isRBHeld = false;
 
   public Coral() {
     // Motor Config //
@@ -96,6 +97,10 @@ public class Coral extends SubsystemBase {
    */
   public void setIsRunningCommand(boolean flag) {
     isRunningCommand = flag;
+  }
+
+  public void setIsRBHeld(boolean flag) {
+    isRBHeld = flag;
   }
 
   /** Returns the current coral angle position (motor encoder x 4) */
