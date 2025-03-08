@@ -30,6 +30,7 @@ import frc.robot.commands.AlgaeCommands;
 import frc.robot.commands.CoralCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.VisionCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Coral;
@@ -176,7 +177,7 @@ public class RobotContainer {
         Commands.runOnce(
             () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.HumanIntake), coral));
     NamedCommands.registerCommand(
-        "Coral Start Outtake", CoralCommands.OuttakeSlow(coral).withTimeout(1));
+        "Coral Start Outtake", CoralCommands.OuttakeSlow(coral).withTimeout(0.5));
     NamedCommands.registerCommand("Coral Start Intake", CoralCommands.Intake(coral));
     NamedCommands.registerCommand("Coral Stop Motor", CoralCommands.stopMotor(coral));
     NamedCommands.registerCommand(
@@ -191,6 +192,34 @@ public class RobotContainer {
         "Align To Closest Left Reef", DriveCommands.driveToReefLeft(drive));
     NamedCommands.registerCommand(
         "Align To Closest Left Reef Close", DriveCommands.driveToReefLeftClose(drive));
+    NamedCommands.registerCommand(
+        "Align To Closest Center Reef", DriveCommands.driveToReefCenter(drive, elevator, algae));
+    NamedCommands.registerCommand(
+        "Align To Closest Center Reef Close", DriveCommands.driveToReefCenterClose(drive));
+    NamedCommands.registerCommand(
+        "Intake Until Has Coral", CoralCommands.intakeUntilHasCoral(coral));
+    NamedCommands.registerCommand("Turn Off Vision", VisionCommands.TurnOffVisionPoseEstimation());
+    NamedCommands.registerCommand("Turn On Vision", VisionCommands.TurnOnVisionPoseEstimation());
+    NamedCommands.registerCommand("Algae Stop Motor", AlgaeCommands.stopMotor(algae));
+    NamedCommands.registerCommand(
+        "Algae Set Home",
+        AlgaeCommands.setSecondarySetpoint(
+            algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home));
+    NamedCommands.registerCommand(
+        "Algae Outtake",
+        Commands.sequence(
+            AlgaeCommands.SetIsRunningCommand(algae, true),
+            AlgaeCommands.SetIsLBHeld(algae, true),
+            AlgaeCommands.setSecondarySetpoint(
+                algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ThrowAngle),
+            new WaitCommand(0.2),
+            AlgaeCommands.Outtake(algae),
+            new WaitCommand(3),
+            AlgaeCommands.SetIsRunningCommand(algae, false),
+            AlgaeCommands.SetIsLBHeld(algae, false),
+            AlgaeCommands.stopMotor(algae),
+            AlgaeCommands.setSecondarySetpoint(
+                algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home)));
 
     // DriveCommands.driveToReefRight(drive), DriveCommands.driveToReefRightClose(drive)
 
@@ -462,6 +491,11 @@ public class RobotContainer {
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
                 ));
+
+    // debugController
+    //     .b()
+    //     .onTrue(VisionCommands.TurnOffVisionPoseEstimation())
+    //     .onFalse(VisionCommands.TurnOnVisionPoseEstimation());
 
     // debugController
     //     .a()

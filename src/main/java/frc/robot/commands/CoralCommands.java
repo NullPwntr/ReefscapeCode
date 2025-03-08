@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotConstants;
+import frc.robot.commands.ReefCommands.IntakeUntilHasCoral;
 import frc.robot.subsystems.Coral;
 
 public class CoralCommands {
@@ -62,5 +63,9 @@ public class CoralCommands {
           coral.setIsRunningCommand(flag);
         },
         coral);
+  }
+
+  public static Command intakeUntilHasCoral(Coral coral) {
+    return new IntakeUntilHasCoral(coral);
   }
 }

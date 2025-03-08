@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
@@ -46,6 +47,9 @@ public class Elevator extends SubsystemBase {
 
   @AutoLogOutput(key = "Elevator/Motion/FF_Output_RAW")
   double ffOutput = 0.0;
+
+  double ascendSpeed = RobotConstants.ElevatorSubsystem.AscendMaxSpeed;
+  double descendSpeed = RobotConstants.ElevatorSubsystem.DescendMaxSpeed;
 
   /** Creates a new Elevator. */
   public Elevator() {
@@ -100,13 +104,15 @@ public class Elevator extends SubsystemBase {
     pidOutput = pid.calculate(getElevatorCANCoderPosition());
     ffOutput = feedforward.calculate(TopMotor.getVelocity().getValueAsDouble());
 
-    setElevatorVoltage(
-        MathUtil.clamp(
-                    pidOutput,
-                    RobotConstants.ElevatorSubsystem.DescendMaxSpeed,
-                    RobotConstants.ElevatorSubsystem.AscendMaxSpeed)
-                * 12.0
-            + ffOutput);
+    if (DriverStation.isAutonomous()) {
+      ascendSpeed = RobotConstants.ElevatorSubsystem.AscendMaxSpeed;
+      descendSpeed = -0.6;
+    } else {
+      ascendSpeed = RobotConstants.ElevatorSubsystem.AscendMaxSpeed;
+      descendSpeed = RobotConstants.ElevatorSubsystem.DescendMaxSpeed;
+    }
+
+    setElevatorVoltage(MathUtil.clamp(pidOutput, descendSpeed, ascendSpeed) * 12.0 + ffOutput);
 
     // Advantage Scope Logging
     Logger.recordOutput("Elevator/TopMotor/Position", TopMotor.getPosition().getValueAsDouble());

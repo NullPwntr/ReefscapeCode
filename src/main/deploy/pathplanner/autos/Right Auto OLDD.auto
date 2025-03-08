@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Right Starting Point"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Align To Closest Left Reef"
@@ -62,15 +68,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Coral Start Outtake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
           }
         },
         {
@@ -100,69 +106,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Align To Closest Center Reef"
+            "name": "Coral Start Intake"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Align To Closest Center Reef Close"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Center To Processor"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Elevator Set Home"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Algae Stop Motor"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Algae Set Home"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Algae Outtake"
+            "pathName": "Right To Human First"
           }
         }
       ]

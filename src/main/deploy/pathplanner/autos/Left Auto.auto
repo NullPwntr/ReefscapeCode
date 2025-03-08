@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Align To Closest Left Reef"
+            "name": "Align To Closest Right Reef"
           }
         },
         {
@@ -52,7 +52,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Align To Closest Left Reef Close"
+                        "name": "Align To Closest Right Reef Close"
                       }
                     }
                   ]
@@ -110,7 +110,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right To Human First2"
+                  "pathName": "Left To Human First"
                 }
               },
               {
@@ -131,7 +131,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Align To Closest Left Reef"
+            "name": "Align To Closest Right Reef"
           }
         },
         {
@@ -170,7 +170,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Align To Closest Left Reef Close"
+                        "name": "Align To Closest Right Reef Close"
                       }
                     }
                   ]
@@ -182,7 +182,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 1.0
           }
         },
         {

@@ -59,7 +59,7 @@ public class RobotConstants {
       public static final double MiddleScoring = 101.5;
       public static final double TopScoring = 115;
 
-      public static final double HumanIntake = 21.0;
+      public static final double HumanIntake = 24.5; // 21.0 home
       public static final double Home = 0.0;
 
       public static final double Center = 26.2 * 4.0 / 2.0; // (Top of the elevator)
@@ -171,7 +171,7 @@ public class RobotConstants {
       public static final double L0 = 0; // -1.0 is basically 0
       public static final double L1 = 0; // -1.0 is basically 0
       public static final double L2 = 21.0; // 22.5
-      public static final double L3 = 60.0; // not tested yet
+      public static final double L3 = 60.2; // 60.5
       public static final double TopAlgae = 45.0; // not tested yet
       public static final double BottomAlgae = 26.0; // not tested yet
 

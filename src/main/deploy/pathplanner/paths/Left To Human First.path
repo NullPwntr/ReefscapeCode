@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.012911184210526,
+        "y": 5.246957236842105
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.973766447368421,
+        "y": 6.10328947368421
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3277960526315788,
+        "y": 6.930756578947368
+      },
+      "prevControl": {
+        "x": 2.8672697368421036,
+        "y": 6.51702302631579
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Coral Start Intake",
+      "waypointRelativePos": 0.7525773195876273,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -52.88313931672988
+  },
+  "reversed": false,
+  "folder": "Left Auto",
+  "idealStartingState": {
+    "velocity": 2.0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": false
+}

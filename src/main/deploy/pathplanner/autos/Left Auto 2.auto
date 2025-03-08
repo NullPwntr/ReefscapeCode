@@ -13,6 +13,130 @@
         {
           "type": "named",
           "data": {
+            "name": "Align To Closest Right Reef"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Elevator Set L4"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Coral Set L4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Align To Closest Right Reef Close"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Stop Motor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Set Intake Angle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Set Home"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Turn Off Vision"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left To Human First"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake Until Has Coral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Vision"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Human To Reef First"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Align To Closest Left Reef"
           }
         },
@@ -65,124 +189,6 @@
           "type": "wait",
           "data": {
             "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Coral Start Outtake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Coral Stop Motor"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Coral Set Intake Angle"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Elevator Set Home"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Turn Off Vision"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Right To Human First2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake Until Has Coral"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Turn On Vision"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Align To Closest Left Reef"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Elevator Set L4"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Coral Set L4"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Align To Closest Left Reef Close"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.5
           }
         },
         {
