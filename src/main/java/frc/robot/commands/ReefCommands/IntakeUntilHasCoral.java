@@ -29,9 +29,9 @@ public class IntakeUntilHasCoral extends Command {
   @Override
   public void end(boolean interrupted) {
     if (interrupted) {
-      System.out.println("❌ IntakeUntilHasCoral Interrupted!");
+      System.out.println("IntakeUntilHasCoral Interrupted!");
     } else {
-      System.out.println("✅ IntakeUntilHasCoral Completed Successfully!");
+      System.out.println("IntakeUntilHasCoral Completed Successfully!");
     }
     coral.coralIntake.set(0);
   }

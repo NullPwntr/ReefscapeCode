@@ -83,9 +83,9 @@ public class DriveToReefRightClose extends Command {
   @Override
   public void end(boolean interrupted) {
     if (interrupted) {
-      System.out.println("❌ DriveToPosePID Interrupted!");
+      System.out.println("DriveToPosePID Interrupted!");
     } else {
-      System.out.println("✅ DriveToPosePID Completed Successfully!");
+      System.out.println("DriveToPosePID Completed Successfully!");
     }
     drive.runVelocity(new ChassisSpeeds(0, 0, 0)); // Stop robot when done
   }

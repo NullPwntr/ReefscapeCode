@@ -180,10 +180,18 @@ public class RobotContainer {
         "Coral Start Outtake", CoralCommands.OuttakeSlow(coral).withTimeout(0.5));
     NamedCommands.registerCommand("Coral Start Intake", CoralCommands.Intake(coral));
     NamedCommands.registerCommand("Coral Stop Motor", CoralCommands.stopMotor(coral));
+
     NamedCommands.registerCommand(
         "Coral Start Commands", CoralCommands.SetIsRunningCommand(coral, true));
     NamedCommands.registerCommand(
         "Coral Stop Commands", CoralCommands.SetIsRunningCommand(coral, false));
+    NamedCommands.registerCommand(
+        "Algae Start Commands", AlgaeCommands.SetIsRunningCommand(algae, true));
+    NamedCommands.registerCommand(
+        "Algae Stop Commands", AlgaeCommands.SetIsRunningCommand(algae, false));
+    NamedCommands.registerCommand("Algae Start LB", AlgaeCommands.SetIsLBHeld(algae, true));
+    NamedCommands.registerCommand("Algae Stop LB", AlgaeCommands.SetIsLBHeld(algae, false));
+
     NamedCommands.registerCommand(
         "Align To Closest Right Reef", DriveCommands.driveToReefRight(drive));
     NamedCommands.registerCommand(
@@ -214,10 +222,11 @@ public class RobotContainer {
                 algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.ThrowAngle),
             new WaitCommand(0.2),
             AlgaeCommands.Outtake(algae),
-            new WaitCommand(3),
+            new WaitCommand(1),
+            AlgaeCommands.stopMotor(algae),
+            new WaitCommand(2),
             AlgaeCommands.SetIsRunningCommand(algae, false),
             AlgaeCommands.SetIsLBHeld(algae, false),
-            AlgaeCommands.stopMotor(algae),
             AlgaeCommands.setSecondarySetpoint(
                 algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home)));
 

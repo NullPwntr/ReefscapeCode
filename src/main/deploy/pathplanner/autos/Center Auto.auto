@@ -162,7 +162,25 @@
         {
           "type": "named",
           "data": {
+            "name": "Algae Start Commands"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Algae Start LB"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Algae Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Algae Stop LB"
           }
         }
       ]
