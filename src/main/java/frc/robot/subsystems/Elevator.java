@@ -68,8 +68,6 @@ public class Elevator extends SubsystemBase {
     BottomMotor.getConfigurator().setPosition(0.0);
 
     pid.setSetpoint(RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight);
-
-    SmartDashboard.putNumber("Elevator_kG", 0);
   }
 
   /** Sets the voltage of both of the elevator motors */

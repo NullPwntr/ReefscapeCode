@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AlgaeCommands;
 import frc.robot.commands.CoralCommands;
 import frc.robot.commands.DriveCommands;
@@ -33,6 +32,7 @@ import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.VisionCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
@@ -62,6 +62,7 @@ public class RobotContainer {
   private final Coral coral;
   private final Algae algae;
   private final Elevator elevator;
+  private final Climb climb;
   private final LEDs led;
 
   // Controllers
@@ -91,6 +92,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
+        climb = new Climb();
         led = new LEDs();
 
         vision =
@@ -114,6 +116,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
+        climb = new Climb();
         led = new LEDs();
 
         vision =
@@ -135,6 +138,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
+        climb = new Climb();
         led = new LEDs();
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
@@ -230,28 +234,26 @@ public class RobotContainer {
             AlgaeCommands.setSecondarySetpoint(
                 algae, RobotConstants.AlgaeSubsystem.SecondaryArm.Angles.Home)));
 
-    // DriveCommands.driveToReefRight(drive), DriveCommands.driveToReefRightClose(drive)
-
     // // // // // // //
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -421,8 +423,6 @@ public class RobotContainer {
                 ))
         .onFalse(
             Commands.sequence(
-                // CoralCommands.Outtake(coral).withTimeout(0.5),
-                // CoralCommands.stopMotor(coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
@@ -441,40 +441,11 @@ public class RobotContainer {
                 ))
         .onFalse(
             Commands.sequence(
-                // CoralCommands.Outtake(coral).withTimeout(0.5),
-                // CoralCommands.stopMotor(coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
                 ));
 
-    // UNUSED BUTTON
-    // operatorController
-    //     .pov(90)
-    //     .onTrue(
-    //         Commands.sequence(
-    //             Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
-    //             ElevatorCommands.SetSetpoint(
-    //                 elevator, RobotConstants.ElevatorSubsystem.Setpoints.L1),
-    //             Commands.runOnce(
-    //                 () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home + 4),
-    //                 coral) // First action
-    //             ))
-    //     .onFalse(
-    //         Commands.sequence(
-    //             CoralCommands.OuttakeSlow(coral).withTimeout(3),
-    //             Commands.runOnce(
-    //                     () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home),
-    //                     coral)
-    //                 .withTimeout(2), // First action
-    //             CoralCommands.stopMotor(coral),
-    //             ElevatorCommands.SetSetpoint(
-    //                 elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
-    //             Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
-    //             ));
-
-    // dont ask
-    // operatorController.pov(0).onTrue(DriveCommands.driveBackwards(drive).withTimeout(0.3));
     operatorController
         .pov(0)
         .onTrue(
@@ -489,13 +460,10 @@ public class RobotContainer {
                 ))
         .onFalse(
             Commands.sequence(
-                // Commands.waitSeconds(0.3), // Wait for 2 seconds
-                // CoralCommands.OuttakeSlow(coral).withTimeout(1),
                 Commands.runOnce(
                         () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.Home),
                         coral)
                     .withTimeout(0), // First action
-                // CoralCommands.stopMotor(coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight),
                 Commands.runOnce(() -> coral.setIsRunningCommand(false), coral) // Second action
@@ -548,6 +516,8 @@ public class RobotContainer {
     // POV RIGHT - L1 (Trough) Scoring (Hold) [UNUSED]
     // RB - Coral throw (Hold)
     // LB - Algae throw (Hold)
+    // RT - Climber goes down (Hold)
+    // LT - Climber goes up (Hold)
   }
 
   /**

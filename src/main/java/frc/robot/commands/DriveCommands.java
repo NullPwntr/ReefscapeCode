@@ -220,33 +220,6 @@ public class DriveCommands {
         drive);
   }
 
-  // This pathfinding works but no need to be used
-  // public static Command driveToReefRight() {
-  //   PathConstraints constraints =
-  //       new PathConstraints(1, 1, Units.degreesToRadians(180), Units.degreesToRadians(180));
-  //   Pose2d targetPose = new Pose2d(new Translation2d(14.35, 4.15), new Rotation2d(179));
-  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
-  // }
-  // public static Command driveToReefLeft(Drive drive, Pose2d desiredPose) {
-  //   PathConstraints constraints =
-  //       new PathConstraints(2, 2, Units.degreesToRadians(180), Units.degreesToRadians(180));
-  //   Pose2d targetPose =
-  //       new Pose2d(
-  //           new Translation2d(desiredPose.getX(), desiredPose.getY()),
-  //           new Rotation2d(desiredPose.getRotation().getDegrees()));
-  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
-  // }
-  // public static Command driveToReefLeft(Drive drive) {
-  //   PathConstraints constraints =
-  //       new PathConstraints(2, 2, Units.degreesToRadians(180), Units.degreesToRadians(180));
-  //   Pose2d targetPose =
-  //       new Pose2d(
-  //           new Translation2d(
-  //               drive.getClosesPose2dLeft().getX(), drive.getClosesPose2dLeft().getY()),
-  //           new Rotation2d(drive.getClosesPose2dLeft().getRotation().getDegrees()));
-  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
-  // }
-
   public static Command driveToReefLeft(Drive drive) {
     return new DriveToReefLeft(drive);
   }

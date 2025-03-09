@@ -13,7 +13,7 @@ public class RobotConstants {
     public static final int DriverPortId = 0;
     public static final int OperatorPortId = 1;
 
-    public static final int DebugPortId = 5; // Future use
+    public static final int DebugPortId = 5; // Used for external buttons/debug purposes
   }
 
   public class SwerveSettings {
@@ -54,15 +54,13 @@ public class RobotConstants {
       }
     }
 
-    public class Setpoints { // Change to CANCoder angles (These are motor positions)
+    public class Setpoints { // CANCoder angles
       public static final double NormalScoring = 101.5;
       public static final double MiddleScoring = 101.5;
       public static final double TopScoring = 115;
 
-      public static final double HumanIntake = 24.5; // 21.0 home
+      public static final double HumanIntake = 24.5;
       public static final double Home = 0.0;
-
-      public static final double Center = 26.2 * 4.0 / 2.0; // (Top of the elevator)
     }
 
     public class Config {
@@ -85,8 +83,7 @@ public class RobotConstants {
 
   public class AlgaeSubsystem {
     public static final int IntakeMotorId = 31;
-    public static final int SecondaryArmMotorId = 41; // The one connected to the
-    // pivot of the primary arm
+    public static final int SecondaryArmMotorId = 41; // Algae Arm
 
     public static final int SecondaryArmCANCoderId = 28;
     public static final SensorDirectionValue SecondaryArmCANCoderDirection =
@@ -154,7 +151,7 @@ public class RobotConstants {
     public static final double DescendMaxSpeed = -0.4; // -0.4 (Negative value)
 
     public class PIDFF {
-      public static final double kP = 0.05; // 0.1;
+      public static final double kP = 0.05;
       public static final double kI = 0;
       public static final double kD = 0;
 
@@ -170,14 +167,10 @@ public class RobotConstants {
 
       public static final double L0 = 0; // -1.0 is basically 0
       public static final double L1 = 0; // -1.0 is basically 0
-      public static final double L2 = 21.0; // 22.5
-      public static final double L3 = 60.2; // 60.5
-      public static final double TopAlgae = 45.0; // not tested yet
-      public static final double BottomAlgae = 26.0; // not tested yet
-
-      public static final double AlgaeScoringHeight = 0.0; // not tested yet (probably MaxHeight)
-      public static final double ProcessorScoringHeight =
-          0.0; // not tested yet (probably not needed since we have arms for algae)
+      public static final double L2 = 21.0;
+      public static final double L3 = 60.2;
+      public static final double TopAlgae = 45.0;
+      public static final double BottomAlgae = 26.0;
     }
 
     public class Config {
