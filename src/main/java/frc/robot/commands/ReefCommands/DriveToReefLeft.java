@@ -17,6 +17,7 @@ public class DriveToReefLeft extends Command {
   private final PIDController xController;
   private final PIDController yController;
   private final PIDController thetaController;
+  private ChassisSpeeds robotRelativeSpeeds;
 
   private final XboxController driverController =
       new XboxController(RobotConstants.Controllers.DriverPortId);
@@ -64,10 +65,17 @@ public class DriveToReefLeft extends Command {
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
 
-    ChassisSpeeds robotRelativeSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            new ChassisSpeeds(-xSpeed, -ySpeed, thetaSpeed),
-            isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      robotRelativeSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              new ChassisSpeeds(-xSpeed, -ySpeed, thetaSpeed),
+              isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+    } else {
+      robotRelativeSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed),
+              isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+    }
 
     // Apply robot-relative movement
     drive.runVelocity(robotRelativeSpeeds);

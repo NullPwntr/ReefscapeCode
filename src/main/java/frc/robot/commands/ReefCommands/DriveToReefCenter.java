@@ -19,6 +19,7 @@ public class DriveToReefCenter extends Command {
   private final Algae algae;
   private Pose2d targetPose;
   private int closesetTag;
+  private ChassisSpeeds robotRelativeSpeeds;
 
   private double wantedElevatorSetpoint;
 
@@ -95,11 +96,17 @@ public class DriveToReefCenter extends Command {
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
 
-    ChassisSpeeds robotRelativeSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            // new ChassisSpeeds(-xSpeed, -ySpeed, 0),
-            new ChassisSpeeds(-xSpeed, -ySpeed, thetaSpeed),
-            isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      robotRelativeSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              new ChassisSpeeds(-xSpeed, -ySpeed, thetaSpeed),
+              isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+    } else {
+      robotRelativeSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed),
+              isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+    }
 
     // Apply robot-relative movement
     drive.runVelocity(robotRelativeSpeeds);
