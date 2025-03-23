@@ -32,7 +32,6 @@ import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.VisionCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
-import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
@@ -62,7 +61,7 @@ public class RobotContainer {
   private final Coral coral;
   private final Algae algae;
   private final Elevator elevator;
-  private final Climb climb;
+  //   private final Climb climb;
   private final LEDs led;
 
   // Controllers
@@ -92,7 +91,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
-        climb = new Climb();
+        // climb = new Climb();
         led = new LEDs();
 
         vision =
@@ -116,7 +115,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
-        climb = new Climb();
+        // climb = new Climb();
         led = new LEDs();
 
         vision =
@@ -138,7 +137,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
-        climb = new Climb();
+        // climb = new Climb();
         led = new LEDs();
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
@@ -240,8 +239,8 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    // autoChooser.addOption(
-    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     // autoChooser.addOption(
     //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // autoChooser.addOption(
@@ -453,7 +452,7 @@ public class RobotContainer {
                 Commands.runOnce(() -> coral.setIsRunningCommand(true), coral),
                 ElevatorCommands.SetSetpoint(
                     elevator, RobotConstants.ElevatorSubsystem.Setpoints.L3),
-                new WaitCommand(1),
+                new WaitCommand(0.5),
                 Commands.runOnce(
                     () -> coral.setSetpoint(RobotConstants.CoralSubsystem.Setpoints.TopScoring),
                     coral) // First action

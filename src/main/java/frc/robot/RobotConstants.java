@@ -40,7 +40,7 @@ public class RobotConstants {
       public static final int AngleCANCoderId = 59;
 
       public static final double LaunchMaxSpeed = 0.4;
-      public static final double ReturnMaxSpeed = -0.3;
+      public static final double ReturnMaxSpeed = -0.45;
 
       public class PIDFF {
         public static final double kP = 0.01;
@@ -55,11 +55,11 @@ public class RobotConstants {
     }
 
     public class Setpoints { // CANCoder angles
-      public static final double NormalScoring = 101.5;
-      public static final double MiddleScoring = 101.5;
-      public static final double TopScoring = 115;
+      public static final double NormalScoring = 95;
+      public static final double MiddleScoring = 95;
+      public static final double TopScoring = 103.5;
 
-      public static final double HumanIntake = 24.5;
+      public static final double HumanIntake = 9.5;
       public static final double Home = 0.0;
     }
 
@@ -147,8 +147,8 @@ public class RobotConstants {
 
     public static final int ElevatorCANCoderId = 29;
 
-    public static final double AscendMaxSpeed = 0.5; // 0.5
-    public static final double DescendMaxSpeed = -0.4; // -0.4 (Negative value)
+    public static final double AscendMaxSpeed = 1; // 0.5
+    public static final double DescendMaxSpeed = -0.6; // -0.4 (Negative value)
 
     public class PIDFF {
       public static final double kP = 0.05;
@@ -156,7 +156,7 @@ public class RobotConstants {
       public static final double kD = 0;
 
       public static final double kS = 0;
-      public static final double kG = 0.34; // Manually calculated
+      public static final double kG = 0.4; // Manually calculated
       public static final double kV = 0;
       public static final double kA = 0;
     }
@@ -167,8 +167,8 @@ public class RobotConstants {
 
       public static final double L0 = 0; // -1.0 is basically 0
       public static final double L1 = 0; // -1.0 is basically 0
-      public static final double L2 = 21.0;
-      public static final double L3 = 60.2;
+      public static final double L2 = 20.0;
+      public static final double L3 = 57.0;
       public static final double TopAlgae = 45.0;
       public static final double BottomAlgae = 26.0;
     }

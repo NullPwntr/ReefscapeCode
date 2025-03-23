@@ -77,7 +77,12 @@ public class Algae extends SubsystemBase {
   /** Returns the current algae arm angle position (CANCoder [0-100]) */
   @AutoLogOutput(key = "Algae/Secondary Arm/Position")
   public double getSecondaryArmPosition() {
-    return -(secondaryArmCANCoder.getPosition().getValueAsDouble() - 0.27880859375) * 350; // offset
+    return (secondaryArmCANCoder.getPosition().getValueAsDouble() + 0.216796875) * 350; // offset
+  }
+  /** Returns the current algae arm angle position (CANCoder [0-100]) */
+  @AutoLogOutput(key = "Algae/Secondary Arm/PositionRAW")
+  public double getSecondaryArmPositionRAW() {
+    return secondaryArmCANCoder.getPosition().getValueAsDouble(); // offset
   }
 
   /** Updates the LED state based on the sensors */

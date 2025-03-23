@@ -67,6 +67,8 @@ public class Elevator extends SubsystemBase {
     BottomMotor.getConfigurator().setPosition(0.0);
 
     pid.setSetpoint(RobotConstants.ElevatorSubsystem.Setpoints.MinimumHeight);
+
+    // SmartDashboard.putNumber("ElevkG", 0);
   }
 
   /** Sets the voltage of both of the elevator motors */
@@ -91,8 +93,13 @@ public class Elevator extends SubsystemBase {
   /** Returns the average voltage from both of the elevator motors */
   @AutoLogOutput(key = "Elevator/CANCoder Position")
   public double getElevatorCANCoderPosition() {
-    return (elevatorCANCoder.getPosition().getValueAsDouble() + 0.00830078125)
+    return (elevatorCANCoder.getPosition().getValueAsDouble() + 0.119140625)
         * 9.234138486; // offset
+  }
+
+  @AutoLogOutput(key = "Elevator/CANCoder PositionRAW")
+  public double getElevatorCANCoderPositionRAW() {
+    return elevatorCANCoder.getPosition().getValueAsDouble();
   }
 
   @Override
@@ -110,6 +117,7 @@ public class Elevator extends SubsystemBase {
     }
 
     setElevatorVoltage(MathUtil.clamp(pidOutput, descendSpeed, ascendSpeed) * 12.0 + ffOutput);
+    // setElevatorVoltage(SmartDashboard.getNumber("ElevkG", 0));
 
     // Advantage Scope Logging
     Logger.recordOutput("Elevator/TopMotor/Position", TopMotor.getPosition().getValueAsDouble());

@@ -83,7 +83,12 @@ public class Coral extends SubsystemBase {
   /** Returns the current coral arm angle position (CANCoder [0-100]) */
   @AutoLogOutput(key = "Coral/Angle/Position")
   public double getCANCoderPosition() {
-    return (cancoder.getPosition().getValueAsDouble() - 0.001220703125) * 175; // offset
+    return (cancoder.getPosition().getValueAsDouble() + 0.000244140625) * 175; // offset
+  }
+  /** Returns the current coral arm angle position (CANCoder [0-100]) */
+  @AutoLogOutput(key = "Coral/Angle/PositionRAW")
+  public double getCANCoderPositionRAW() {
+    return cancoder.getPosition().getValueAsDouble(); // offset
   }
 
   /** Changes the coral angle setpoint */
