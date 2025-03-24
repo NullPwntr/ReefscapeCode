@@ -97,6 +97,9 @@ public class Robot extends LoggedRobot {
       }
     }
 
+    LimelightHelpers.setPipelineIndex("limelight-right", 0);
+    LimelightHelpers.setPipelineIndex("limelight-left", 1);
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
@@ -121,7 +124,10 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    LimelightHelpers.setPipelineIndex("limelight-right", 0);
+    LimelightHelpers.setPipelineIndex("limelight-left", 1);
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -130,6 +136,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    LimelightHelpers.setPipelineIndex("limelight-right", 0);
+    LimelightHelpers.setPipelineIndex("limelight-left", 1);
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -145,6 +153,8 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    LimelightHelpers.setPipelineIndex("limelight-right", 0);
+    LimelightHelpers.setPipelineIndex("limelight-left", 1);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

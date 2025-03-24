@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Align To Closest Left Reef"
+            "name": "Align To Closest Right Reef"
           }
         },
         {
@@ -52,7 +52,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Align To Closest Left Reef Close"
+                        "name": "Align To Closest Right Reef Close"
                       }
                     }
                   ]
@@ -94,25 +94,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Align To Closest Center Reef"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Align To Closest Center Reef Close"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
+            "waitTime": 0.1
           }
         },
         {
@@ -120,9 +102,65 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "Turn Off Vision"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "Center To Processor"
+                  "pathName": "Left To Human First"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake Until Has Coral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Closest Right Reef"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Elevator Set L4"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Coral Set L4"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -130,27 +168,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
-                        "name": "Elevator Set Home"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Algae Stop Motor"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Algae Set Home"
+                        "name": "Align To Closest Right Reef Close"
                       }
                     }
                   ]
@@ -160,27 +180,33 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Algae Start Commands"
+            "waitTime": 1.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Algae Start LB"
+            "name": "Coral Start Outtake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Algae Outtake"
+            "name": "Coral Stop Motor"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Algae Stop LB"
+            "name": "Coral Set Intake Angle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Set Home"
           }
         }
       ]

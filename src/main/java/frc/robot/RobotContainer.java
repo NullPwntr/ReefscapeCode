@@ -209,9 +209,14 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Align To Closest Center Reef Close", DriveCommands.driveToReefCenterClose(drive));
     NamedCommands.registerCommand(
+        "Align To Closest Human Intake", DriveCommands.driveToHumanIntake(drive));
+    NamedCommands.registerCommand(
         "Intake Until Has Coral", CoralCommands.intakeUntilHasCoral(coral));
     NamedCommands.registerCommand("Turn Off Vision", VisionCommands.TurnOffVisionPoseEstimation());
     NamedCommands.registerCommand("Turn On Vision", VisionCommands.TurnOnVisionPoseEstimation());
+    NamedCommands.registerCommand("Turn On Reef Vision", VisionCommands.TurnOnReefPoseEstimation());
+    NamedCommands.registerCommand(
+        "Turn On Human Vision", VisionCommands.TurnOnHumanPoseEstimation());
     NamedCommands.registerCommand("Algae Stop Motor", AlgaeCommands.stopMotor(algae));
     NamedCommands.registerCommand(
         "Algae Set Home",
@@ -303,7 +308,7 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     // driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    driverController.x().onTrue(Commands.sequence(DriveCommands.driveToHumanIntake(drive, coral)));
+    driverController.x().onTrue(Commands.sequence(DriveCommands.driveToHumanIntake(drive)));
 
     // Reset gyro to 0° when B button is pressed
     driverController

@@ -10,12 +10,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.LimelightHelpers;
 import frc.robot.RobotConstants;
-import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.drive.Drive;
 
 public class DriveToHumanIntake extends Command {
   private final Drive drive;
-  private final Coral coral;
+  // private final Coral coral;
   private Pose2d targetPose;
   private final PIDController xController;
   private final PIDController yController;
@@ -30,9 +29,9 @@ public class DriveToHumanIntake extends Command {
   private static final double Y_KP = 3;
   private static final double THETA_KP = 3;
 
-  public DriveToHumanIntake(Drive drive, Coral coral) {
+  public DriveToHumanIntake(Drive drive) {
     this.drive = drive;
-    this.coral = coral;
+    // this.coral = coral;
 
     xController = new PIDController(X_KP, 0, 0);
     yController = new PIDController(Y_KP, 0, 0);
@@ -40,7 +39,7 @@ public class DriveToHumanIntake extends Command {
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI); // Handle wraparound
 
-    addRequirements(drive, coral);
+    addRequirements(drive);
   }
 
   @Override
@@ -60,6 +59,8 @@ public class DriveToHumanIntake extends Command {
   public void execute() {
     Pose2d currentPose = drive.getPose(); // Get live field-relative pose
 
+    double multiplier = 0.7;
+
     // Calculate velocity outputs in FIELD-RELATIVE coordinates
     double xSpeed = xController.calculate(currentPose.getX(), targetPose.getX());
     double ySpeed = yController.calculate(currentPose.getY(), targetPose.getY());
@@ -75,12 +76,12 @@ public class DriveToHumanIntake extends Command {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
       robotRelativeSpeeds =
           ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(-xSpeed, -ySpeed, thetaSpeed),
+              new ChassisSpeeds(-xSpeed * multiplier, -ySpeed * multiplier, thetaSpeed),
               isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
     } else {
       robotRelativeSpeeds =
           ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed),
+              new ChassisSpeeds(xSpeed * multiplier, ySpeed * multiplier, thetaSpeed),
               isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
     }
 
@@ -91,8 +92,7 @@ public class DriveToHumanIntake extends Command {
   @Override
   public boolean isFinished() {
     return (xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint())
-        || driverController.getYButton()
-        || coral.hasCoral();
+        || driverController.getYButton();
   }
 
   @Override

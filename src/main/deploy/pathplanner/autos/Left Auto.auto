@@ -33,7 +33,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -64,7 +64,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.8
           }
         },
         {
@@ -94,29 +94,29 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.2
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
+          "data": {
+            "name": "Turn On Human Vision"
+          }
+        },
+        {
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Turn Off Vision"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left To Human First"
+                  "name": "Intake Until Has Coral"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake Until Has Coral"
+                  "name": "Align To Closest Human Intake"
                 }
               }
             ]
@@ -125,7 +125,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Turn On Vision"
+            "name": "Turn On Reef Vision"
           }
         },
         {
@@ -151,7 +151,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -182,7 +182,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.8
           }
         },
         {
@@ -207,6 +207,142 @@
           "type": "named",
           "data": {
             "name": "Elevator Set Home"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Human Vision"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake Until Has Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align To Closest Human Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Reef Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Closest Left Reef"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Elevator Set L4"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Coral Set L4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Align To Closest Left Reef Close"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.8
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Stop Motor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Set Intake Angle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Set Home"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Reef Vision"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 15.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left To Human First"
           }
         }
       ]

@@ -699,11 +699,11 @@ public class Drive extends SubsystemBase {
     double reefX =
         tagX
             + 0.3 * Math.cos(tagYaw - Math.PI / 2) // Left shift
-            + (REEF_Y_OFFSET - 0.2) * Math.cos(tagYaw); // Forward shift
+            + (REEF_Y_OFFSET - 0.35) * Math.cos(tagYaw); // Forward shift
     double reefY =
         tagY
             + 0.3 * Math.sin(tagYaw - Math.PI / 2) // Left shift
-            + (REEF_Y_OFFSET - 0.2) * Math.sin(tagYaw); // Forward shift
+            + (REEF_Y_OFFSET - 0.35) * Math.sin(tagYaw); // Forward shift
 
     return new Pose2d(
         reefX, reefY, new Rotation2d(Math.toRadians(Math.ceil(Math.toDegrees(tagYaw)) + 0.01)));
