@@ -16,6 +16,8 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -62,9 +64,14 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
   AprilTagFieldLayout field = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
+  Pigeon2 gyro = new Pigeon2(8);
+
   // AprilTag IDs for each alliance
   private final List<Integer> redAllianceReefTagIds = List.of(6, 7, 8, 9, 10, 11);
   private final List<Integer> blueAllianceReefTagIds = List.of(17, 18, 19, 20, 21, 22);
+
+  private final List<Integer> redAllianceHumanTagIds = List.of(1, 2);
+  private final List<Integer> blueAllianceHumanTagIds = List.of(12, 13);
 
   // Define separate offsets for X (right-left) and Y (forward-backward)
   private final double REEF_X_OFFSET = 0.1775; // Moves perpendicular to tag orientation
@@ -170,10 +177,80 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    // this.setPose(new Pose2d(this.getPose().getTranslation(), new Rotation2d()));
+  }
+
+  // public void autoGyroZeroWithVision() {
+  //   var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+  //   String tableKey = (alliance == Alliance.Red) ? "botpose_wpired" : "botpose_wpiblue";
+
+  //   NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight-right");
+  //   double[] botPose = limelightTable.getEntry(tableKey).getDoubleArray(new double[6]);
+  //   double tv = limelightTable.getEntry("tv").getDouble(0); // target valid
+  //   double latency = limelightTable.getEntry("tl").getDouble(100); // vision latency
+
+  //   // Only proceed if target is valid and pose looks good
+  //   if (tv < 1 || botPose.length < 6 || latency > 30) {
+  //     return; // No valid tag or data is stale
+  //   }
+
+  //   // Extract heading from Limelight pose
+  //   double tagYaw = botPose[5]; // in degrees
+  //   Rotation2d visionHeading = Rotation2d.fromDegrees(tagYaw);
+
+  //   // Get current gyro heading
+  //   Rotation2d gyroHeading =
+  //       Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble()); // adjust for your gyro
+  //   Rotation2d difference = visionHeading.minus(gyroHeading);
+
+  //   // Only zero if heading is off by enough to matter
+  //   if (Math.abs(difference.getDegrees()) > 2.0) {
+  //     gyro.setYaw(tagYaw + 180);
+  //     System.out.println("[AutoGyroZero] Gyro reset to AprilTag heading: " + tagYaw);
+  //   }
+  // }
+
+  public double zeroYawInitial() {
+    double previousYaw = gyro.getYaw().getValueAsDouble();
+    System.out.println("Old Yaw: " + previousYaw);
+    if (DriverStation.getAlliance().get() != Alliance.Red) { // If Alliance is NOT RED
+      // System.out.println("Yaw 180 " + RobotContainer.isAllianceRed);
+
+      StatusCode status = StatusCode.StatusCodeNotInitialized;
+      for (int i = 0; i < 5; ++i) {
+        status = gyro.setYaw(180.0);
+        if (status.isOK()) break;
+      }
+      if (!status.isOK()) {
+        System.out.println("Could not apply configs, error code: " + status.toString());
+      }
+
+      // Reset IMU pose; may need to remove for the competition
+      // setCurrentOdometryPoseToSpecificRotation(180);
+
+    } else {
+      // System.out.println("Yaw NOT 180 " + RobotContainer.isAllianceRed);
+
+      StatusCode status = StatusCode.StatusCodeNotInitialized;
+      for (int i = 0; i < 5; ++i) {
+        status = gyro.setYaw(0);
+        if (status.isOK()) break;
+      }
+      if (!status.isOK()) {
+        System.out.println("Could not apply configs, error code: " + status.toString());
+      }
+
+      // setCurrentOdometryPoseToSpecificRotation(0);
+    }
+    System.out.println("New Yaw: " + gyro.getYaw());
+    return previousYaw;
   }
 
   @Override
   public void periodic() {
+    // autoGyroZeroWithVision();
+
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -371,6 +448,11 @@ public class Drive extends SubsystemBase {
     return getReefCenterClose(getClosestReefAprilTagToRobot());
   }
 
+  @AutoLogOutput(key = "Poses/PoseClosestHuman")
+  public Pose2d getClosesPose2dHuman() {
+    return getHumanPose2d(getClosestHumanAprilTagToRobot());
+  }
+
   @AutoLogOutput(key = "Poses/AprilTagIdClosest")
   public int getClosestReefAprilTagToRobot() {
     double robotX = getPose().getX();
@@ -380,6 +462,44 @@ public class Drive extends SubsystemBase {
         (DriverStation.getAlliance().get() == Alliance.Red)
             ? redAllianceReefTagIds
             : blueAllianceReefTagIds;
+
+    int closestTagId = -1; // Default value if no tag is found
+    double minDistance = Double.MAX_VALUE;
+
+    for (int tagId : validTagIds) {
+      Pose3d tagPose =
+          field
+              .getTagPose(tagId)
+              .orElseThrow(() -> new IllegalArgumentException("Invalid AprilTag ID: " + tagId));
+
+      double tagX = tagPose.getX();
+      double tagY = tagPose.getY();
+
+      // Calculate Euclidean distance
+      double distance = Math.hypot(tagX - robotX, tagY - robotY);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestTagId = tagId;
+      }
+    }
+
+    if (closestTagId == -1) {
+      throw new IllegalStateException("No valid AprilTag found for the given alliance.");
+    }
+
+    return closestTagId;
+  }
+
+  @AutoLogOutput(key = "Poses/AprilTagIdClosest")
+  public int getClosestHumanAprilTagToRobot() {
+    double robotX = getPose().getX();
+    double robotY = getPose().getY();
+
+    List<Integer> validTagIds =
+        (DriverStation.getAlliance().get() == Alliance.Red)
+            ? redAllianceHumanTagIds
+            : blueAllianceHumanTagIds;
 
     int closestTagId = -1; // Default value if no tag is found
     double minDistance = Double.MAX_VALUE;
@@ -565,7 +685,32 @@ public class Drive extends SubsystemBase {
         new Rotation2d(Math.toRadians(Math.ceil(Math.toDegrees(tagYaw - Math.PI)) + 0.01)));
   }
 
+  public Pose2d getHumanPose2d(int aprilTagId) {
+    Pose3d tagPose =
+        field
+            .getTagPose(aprilTagId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid AprilTag ID: " + aprilTagId));
+
+    double tagX = tagPose.getX();
+    double tagY = tagPose.getY();
+    double tagYaw = tagPose.getRotation().getZ(); // Rotation in radians
+
+    // Compute left reef position
+    double reefX =
+        tagX
+            + 0.3 * Math.cos(tagYaw - Math.PI / 2) // Left shift
+            + (REEF_Y_OFFSET - 0.2) * Math.cos(tagYaw); // Forward shift
+    double reefY =
+        tagY
+            + 0.3 * Math.sin(tagYaw - Math.PI / 2) // Left shift
+            + (REEF_Y_OFFSET - 0.2) * Math.sin(tagYaw); // Forward shift
+
+    return new Pose2d(
+        reefX, reefY, new Rotation2d(Math.toRadians(Math.ceil(Math.toDegrees(tagYaw)) + 0.01)));
+  }
+
   /** Returns the current odometry rotation. */
+  @AutoLogOutput(key = "Robot/Drive/Rotation2d")
   public Rotation2d getRotation() {
     return getPose().getRotation();
   }

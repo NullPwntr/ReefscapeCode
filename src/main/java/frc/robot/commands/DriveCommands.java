@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.RobotConstants;
 import frc.robot.commands.ReefCommands.*;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
@@ -242,6 +243,10 @@ public class DriveCommands {
 
   public static Command driveToReefCenterClose(Drive drive) {
     return new DriveToReefCenterClose(drive);
+  }
+
+  public static Command driveToHumanIntake(Drive drive, Coral coral) {
+    return new DriveToHumanIntake(drive, coral);
   }
 
   public static Command goToPosePID(Drive drive, Pose2d targetPose) {

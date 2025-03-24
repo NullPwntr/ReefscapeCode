@@ -21,8 +21,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AlgaeCommands;
@@ -34,7 +36,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -62,7 +63,7 @@ public class RobotContainer {
   private final Algae algae;
   private final Elevator elevator;
   //   private final Climb climb;
-  private final LEDs led;
+  //   private final LEDs led;
 
   // Controllers
   private final CommandXboxController driverController =
@@ -92,13 +93,13 @@ public class RobotContainer {
         algae = new Algae();
         elevator = new Elevator();
         // climb = new Climb();
-        led = new LEDs();
+        // led = new LEDs();
 
         vision =
             new Vision(
-                drive::addVisionMeasurement, new VisionIOLimelight(camera0Name, drive::getRotation)
-                // new VisionIOLimelight(camera1Name, drive::getRotation)
-                );
+                drive::addVisionMeasurement,
+                new VisionIOLimelight(camera0Name, drive::getRotation),
+                new VisionIOLimelight(camera1Name, drive::getRotation));
 
         break;
 
@@ -116,7 +117,7 @@ public class RobotContainer {
         algae = new Algae();
         elevator = new Elevator();
         // climb = new Climb();
-        led = new LEDs();
+        // led = new LEDs();
 
         vision =
             new Vision(
@@ -138,7 +139,7 @@ public class RobotContainer {
         algae = new Algae();
         elevator = new Elevator();
         // climb = new Climb();
-        led = new LEDs();
+        // led = new LEDs();
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
 
@@ -254,6 +255,14 @@ public class RobotContainer {
     // autoChooser.addOption(
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    SmartDashboard.putData(
+        "Zero Gyro",
+        new InstantCommand(
+                () -> {
+                  drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+                })
+            .ignoringDisable(true));
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -292,7 +301,9 @@ public class RobotContainer {
     //             () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
-    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    driverController.x().onTrue(Commands.sequence(DriveCommands.driveToHumanIntake(drive, coral)));
 
     // Reset gyro to 0° when B button is pressed
     driverController

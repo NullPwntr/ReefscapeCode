@@ -21,4 +21,20 @@ public class VisionCommands {
           LimelightHelpers.setPipelineIndex("limelight-right", 0);
         });
   }
+
+  public static Command TurnOnReefPoseEstimation() {
+    return Commands.runOnce(
+        () -> {
+          LimelightHelpers.setPipelineIndex("limelight-right", 0);
+          LimelightHelpers.setPipelineIndex("limelight-left", 1);
+        });
+  }
+
+  public static Command TurnOnHumanPoseEstimation() {
+    return Commands.runOnce(
+        () -> {
+          LimelightHelpers.setPipelineIndex("limelight-right", 1);
+          LimelightHelpers.setPipelineIndex("limelight-left", 0);
+        });
+  }
 }
