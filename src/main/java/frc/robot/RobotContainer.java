@@ -34,6 +34,7 @@ import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.VisionCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.drive.Drive;
@@ -62,7 +63,7 @@ public class RobotContainer {
   private final Coral coral;
   private final Algae algae;
   private final Elevator elevator;
-  //   private final Climb climb;
+  private final Climb climb;
   //   private final LEDs led;
 
   // Controllers
@@ -92,7 +93,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
-        // climb = new Climb();
+        climb = new Climb();
         // led = new LEDs();
 
         vision =
@@ -116,7 +117,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
-        // climb = new Climb();
+        climb = new Climb();
         // led = new LEDs();
 
         vision =
@@ -138,7 +139,7 @@ public class RobotContainer {
         coral = new Coral();
         algae = new Algae();
         elevator = new Elevator();
-        // climb = new Climb();
+        climb = new Climb();
         // led = new LEDs();
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
@@ -516,7 +517,7 @@ public class RobotContainer {
     //             AlgaeCommands.SetIsRunningCommand(algae, false),
     //             AlgaeCommands.SetIsNetScoring(algae, false)));
 
-    // debugController.y().onTrue(DriveCommands.driveToReefLeft(drive));
+    debugController.y().onTrue(DriveCommands.driveToHumanIntake(drive));
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -695,14 +695,29 @@ public class Drive extends SubsystemBase {
     double tagY = tagPose.getY();
     double tagYaw = tagPose.getRotation().getZ(); // Rotation in radians
 
+    double fieldY = 8;
+    double fieldX = 16;
+
     // Compute left reef position
+    double baseOffset = .45;
+    double offsetX = -baseOffset;
+    // if (tagY > fieldY / 2) {
+    //   offsetX = -baseOffset;
+    // } else {
+    //   offsetX = baseOffset;
+    // }
+
+    // if (DriverStation.getAlliance().get() == Alliance.Blue) {
+    //   offsetX *= -1;
+    // }
+
     double reefX =
         tagX
-            + 0.3 * Math.cos(tagYaw - Math.PI / 2) // Left shift
+            + offsetX * Math.cos(tagYaw - Math.PI / 2) // Left shift
             + (REEF_Y_OFFSET - 0.35) * Math.cos(tagYaw); // Forward shift
     double reefY =
         tagY
-            + 0.3 * Math.sin(tagYaw - Math.PI / 2) // Left shift
+            + offsetX * Math.sin(tagYaw - Math.PI / 2) // Left shift
             + (REEF_Y_OFFSET - 0.35) * Math.sin(tagYaw); // Forward shift
 
     return new Pose2d(

@@ -50,7 +50,7 @@ public class DriveToHumanIntake extends Command {
     // System.out.println("DriveToPosePID Started: Moving to " + targetPose);
 
     LimelightHelpers.setPipelineIndex("limelight-right", 1);
-    LimelightHelpers.setPipelineIndex("limelight-left", 0);
+    LimelightHelpers.setPipelineIndex("limelight", 0);
 
     targetPose = drive.getClosesPose2dHuman();
   }
@@ -59,7 +59,8 @@ public class DriveToHumanIntake extends Command {
   public void execute() {
     Pose2d currentPose = drive.getPose(); // Get live field-relative pose
 
-    double multiplier = 0.7;
+    double speedmult = 0.5;
+    double rotationmult = 2;
 
     // Calculate velocity outputs in FIELD-RELATIVE coordinates
     double xSpeed = xController.calculate(currentPose.getX(), targetPose.getX());
@@ -76,12 +77,13 @@ public class DriveToHumanIntake extends Command {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
       robotRelativeSpeeds =
           ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(-xSpeed * multiplier, -ySpeed * multiplier, thetaSpeed),
+              new ChassisSpeeds(
+                  -xSpeed * speedmult, -ySpeed * speedmult, thetaSpeed * rotationmult),
               isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
     } else {
       robotRelativeSpeeds =
           ChassisSpeeds.fromFieldRelativeSpeeds(
-              new ChassisSpeeds(xSpeed * multiplier, ySpeed * multiplier, thetaSpeed),
+              new ChassisSpeeds(xSpeed * speedmult, ySpeed * speedmult, thetaSpeed * rotationmult),
               isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
     }
 
@@ -104,7 +106,7 @@ public class DriveToHumanIntake extends Command {
     }
 
     LimelightHelpers.setPipelineIndex("limelight-right", 0);
-    LimelightHelpers.setPipelineIndex("limelight-left", 1);
+    LimelightHelpers.setPipelineIndex("limelight", 1);
 
     drive.runVelocity(new ChassisSpeeds(0, 0, 0)); // Stop robot when done
   }

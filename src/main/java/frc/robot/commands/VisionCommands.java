@@ -26,7 +26,7 @@ public class VisionCommands {
     return Commands.runOnce(
         () -> {
           LimelightHelpers.setPipelineIndex("limelight-right", 0);
-          LimelightHelpers.setPipelineIndex("limelight-left", 1);
+          LimelightHelpers.setPipelineIndex("limelight", 1);
         });
   }
 
@@ -34,7 +34,7 @@ public class VisionCommands {
     return Commands.runOnce(
         () -> {
           LimelightHelpers.setPipelineIndex("limelight-right", 1);
-          LimelightHelpers.setPipelineIndex("limelight-left", 0);
+          LimelightHelpers.setPipelineIndex("limelight", 0);
         });
   }
 }

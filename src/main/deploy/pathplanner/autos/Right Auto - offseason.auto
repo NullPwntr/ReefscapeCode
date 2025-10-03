@@ -1,0 +1,378 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Commands"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Closest Left Reef"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Elevator Set L4"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Coral Set L4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Align To Closest Left Reef Close"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.8
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Stop Motor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Set Intake Angle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Set Home"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Closest Left Reef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Human Vision"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake Until Has Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align To Closest Human Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Reef Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Closest Left Reef"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Elevator Set L4"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Coral Set L4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Align To Closest Left Reef Close"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.8
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Stop Motor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Set Intake Angle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Set Home"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Human Vision"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake Until Has Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align To Closest Human Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Reef Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Closest Right Reef"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Elevator Set L4"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Coral Set L4"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Align To Closest Right Reef Close"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.8
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Start Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Stop Motor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Set Intake Angle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Set Home"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Turn On Reef Vision"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 15.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right To Human First"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
